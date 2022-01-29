@@ -1,0 +1,21 @@
+textarea {
+    width: 50%;
+    height: 50px;
+    padding: 12px 20px;
+    margin: 0px 20px 10px 60px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-size: 16px;
+    resize: none;
+    box-shadow: 10px 10px 5px #aaaaaa;
+  }
+
+img{
+  margin: 0px 20px 10px 60px;
+}
+
+button{
+  margin: 0px 0px 5px 10px;
+}
