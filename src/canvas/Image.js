@@ -2,12 +2,11 @@ import React from "react";
 import { Image, Transformer } from "react-konva";
 import useImage from "use-image";
 
-
 const Img = ({ shapeProps, isSelected, onSelect, onChange, imageUrl }) => {
   const shapeRef = React.useRef();
   const trRef = React.useRef();
   const [image] = useImage(imageUrl);
-  const [name, setName] = React.useState('');
+  const [name, setName] = React.useState("");
   React.useEffect(() => {
     if (isSelected) {
       // we need to attach transformer manually
@@ -22,14 +21,14 @@ const Img = ({ shapeProps, isSelected, onSelect, onChange, imageUrl }) => {
         image={image}
         ref={shapeRef}
         draggable
-        onDragEnd={e => {
+        onDragEnd={(e) => {
           onChange({
             ...shapeProps,
             x: e.target.x(),
             y: e.target.y(),
           });
         }}
-        onTransformEnd={e => {
+        onTransformEnd={(e) => {
           const node = shapeRef.current;
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();

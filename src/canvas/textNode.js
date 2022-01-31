@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { v1 as uuidv1 } from 'uuid';
+import { v1 as uuidv1 } from "uuid";
 uuidv1();
 export const addTextNode = (stage, layer) => {
   const id = uuidv1();
@@ -17,12 +17,12 @@ export const addTextNode = (stage, layer) => {
     node: textNode,
     enabledAnchors: ["middle-left", "middle-right"],
     // set minimum width of text
-    boundBoxFunc: function(oldBox, newBox) {
+    boundBoxFunc: function (oldBox, newBox) {
       newBox.width = Math.max(30, newBox.width);
       return newBox;
     },
   });
-  stage.on("click", function(e) {
+  stage.on("click", function (e) {
     if (!this.clickStartShape) {
       return;
     }
@@ -35,7 +35,7 @@ export const addTextNode = (stage, layer) => {
       layer.draw();
     }
   });
-  textNode.on("transform", function() {
+  textNode.on("transform", function () {
     // reset scale, so only with is changing by transformer
     textNode.setAttrs({
       width: textNode.width() * textNode.scaleX(),
@@ -49,22 +49,22 @@ export const addTextNode = (stage, layer) => {
     textNode.hide();
     tr.hide();
     layer.draw();
-// create textarea over canvas with absolute position
+    // create textarea over canvas with absolute position
     // first we need to find position for textarea
     // how to find it?
-// at first lets find position of text node relative to the stage:
+    // at first lets find position of text node relative to the stage:
     let textPosition = textNode.absolutePosition();
-// then lets find position of stage container on the page:
+    // then lets find position of stage container on the page:
     let stageBox = stage.container().getBoundingClientRect();
-// so position of textarea will be the sum of positions above:
+    // so position of textarea will be the sum of positions above:
     let areaPosition = {
       x: stageBox.left + textPosition.x,
       y: stageBox.top + textPosition.y,
     };
-// create textarea and style it
+    // create textarea and style it
     let textarea = document.createElement("textarea");
     document.body.appendChild(textarea);
-// apply many styles to match text on canvas as close as possible
+    // apply many styles to match text on canvas as close as possible
     // remember that text rendering on canvas and on the textarea can be different
     // and sometimes it is hard to make it 100% the same. But we will try...
     textarea.value = textNode.text();
@@ -122,13 +122,13 @@ export const addTextNode = (stage, layer) => {
       if (isSafari || isFirefox) {
         newWidth = Math.ceil(newWidth);
       }
-let isEdge = document.documentMode || /Edge/.test(navigator.userAgent);
+      let isEdge = document.documentMode || /Edge/.test(navigator.userAgent);
       if (isEdge) {
         newWidth += 1;
       }
       textarea.style.width = newWidth + "px";
     }
-    textarea.addEventListener("keydown", function(e) {
+    textarea.addEventListener("keydown", function (e) {
       // hide on enter
       // but don't hide on shift + enter
       if (e.keyCode === 13 && !e.shiftKey) {
@@ -140,7 +140,7 @@ let isEdge = document.documentMode || /Edge/.test(navigator.userAgent);
         removeTextarea();
       }
     });
-    textarea.addEventListener("keydown", function(e) {
+    textarea.addEventListener("keydown", function (e) {
       let scale = textNode.getAbsoluteScale().x;
       setTextareaWidth(textNode.width() * scale);
       textarea.style.height = "auto";

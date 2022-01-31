@@ -1,34 +1,25 @@
-import Login from './components/login'
-import HomePage from './canvas/HomePage'
-import Image from './images/image'
-import './App.css';
-import {Container} from 'react-bootstrap';
+import Login from "./components/login";
+import HomePage from "./canvas/HomePage";
+import Image from "./images/image";
+import "./App.css";
+import { Container } from "react-bootstrap";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Link,
-  BrowserRouter
+  BrowserRouter,
 } from "react-router-dom";
-
-
 
 function App() {
   return (
-    
     <BrowserRouter>
       <Routes>
-          
-          <Route  path="/" element = {<Login/>}> 
-          </Route>
-          <Route path="/home" element = {<HomePage/>}> 
-          </Route>
-          <Route path="/image" element = {<Image/>}> 
-          </Route>
-        </Routes>
-
-        </BrowserRouter>
-
+        <Route path="/" element={<HomePage />}></Route>
+        <Route path="/home" element={<Login />}></Route>
+        <Route path="/image" element={<Image />}></Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 export default App;

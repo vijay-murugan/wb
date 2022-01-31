@@ -1,46 +1,36 @@
 import React, { useState, useRef } from "react";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import { Button } from 'reactstrap';
+import { Button } from "reactstrap";
 
+import Dropzone from "react-dropzone";
 
-
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomePage.css";
 import { Stage, Layer, Image } from "react-konva";
 import Rectangle from "./Rectangle";
 import Circle from "./Circle";
 import { addLine } from "./line";
 import { addTextNode } from "./textNode";
-import useImage from 'use-image';
-import { v1 as uuidv1 } from 'uuid';
-import { Canvas } from "konva/lib/Canvas";
+import useImage from "use-image";
+import { v1 as uuidv1 } from "uuid";
+import html2canvas from "html2canvas";
 
-
-import html2canvas from 'html2canvas';
-import { saveAs } from 'file-saver';
-
-
-
-uuidv1(); 
+uuidv1();
+//https://www.google.com/s2/favicons?sz=128&domain_url=yahoo.com
 //https://www.google.com/s2/favicons?sz=64&domain_url=microsoft.com
 //Image drag drop with URLImage
 const URLImage = ({ image }) => {
-    const [img] = useImage(image.src);
-    return (
-      <Image
-        image={img}
-        
-        x={image.x}
-        y={image.y}
-        offsetX={img ? img.width / 2 : 0}
-        offsetY={img ? img.height / 2 : 0}
-      />
-    );
-  };
-
-
-
-
+  const [img] = useImage(image.src);
+  return (
+    <Image
+      image={img}
+      x={image.x}
+      y={image.y}
+      offsetX={img ? img.width / 2 : 0}
+      offsetY={img ? img.height / 2 : 0}
+    />
+  );
+};
 
 function HomePage() {
   const [rectangles, setRectangles] = useState([]);
@@ -50,128 +40,76 @@ function HomePage() {
   const [, updateState] = React.useState();
   const stageEl = React.createRef();
   const layerEl = React.createRef();
-  const [name, setName] = React.useState('');
+  const [name, setName] = React.useState("");
   const dragUrl = React.useRef();
-  const stageRef = React.useRef();
   const [images, setImages] = React.useState([]);
+  let y;
+  const [imageList, setImageList] = React.useState([]);
 
-  var proxyUrl = 'https://localhost:3000/home/'
-
-  //"C:\\Users\\Vijay Murugan A S\\Downloads\\react-generator.png"
- //  "C:\\Users\\Vijay Murugan A S\\Desktop\\Files\\work\\new\\app\\src\\images\\"
-  const getRandomInt = max => {
+  const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
   };
-  
-//experiments
 
-function toDataURL(url, callback) {
-  var xhr = new XMLHttpRequest();
-  xhr.onload = function() {
-    var reader = new FileReader();
-    reader.onloadend = function() {
-      callback(reader.result);
-    }
-    reader.readAsDataURL(xhr.response);
+  async function getBase64(file) {
+    let result_base64 = await new Promise((resolve) => {
+      let reader = new FileReader();
+      reader.onload = (e) => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+    return result_base64;
+  }
+
+  const takeshot = async () => {
+    let div = await document.getElementById("canvass");
+
+    // Use the html2canvas
+    // function to take a screenshot
+    // and append it
+    // to the output div
+    html2canvas(div, {
+      allowTaint: true,
+      foreignObjectRendering: true,
+      useCORS: true,
+    }).then(function (canvas) {
+      document.getElementById("output").appendChild(canvas);
+    });
   };
-  xhr.open('GET', url);
-  xhr.responseType = 'blob';
-  xhr.send();
-}
 
-// toDataURL('https://icons.duckduckgo.com/ip3/www.google.com.ico', function(dataUrl) {
-//   console.log('RESULT:', dataUrl)
-// })
+  function gotFile(file) {
+    Dropzone.style("display", "none");
 
+    if (file.type === "image") {
+      var image = new Image();
 
-
-
-// function DownloadCanvasAsImage(){
-// 	let downloadLink = document.createElement('a');
-// 	downloadLink.setAttribute('download', 'CanvasAsImage.png');
-// 	let canvas = stageEl.current.getStage()
-//   let dataURL = canvas.toDataURL('image/png');
-//   let url = dataURL.replace(/^data:image\/png/,'data:application/octet-stream');
-// 	downloadLink.setAttribute('href',url);
-// 	downloadLink.click();
-// }
-
-function downlo(){
-  document.getElementById("downloader").download = "image.png";
-  document.getElementById("downloader").href = stageEl.current.getStage().toDataURL("image/png").replace(/^data:image\/[^;]/, 'data:application/octet-stream');
-}
-
-const dl =  () => {
-  var canvas = stageEl.current.getStage()
-  canvas.toBlob(function(blob){
-    saveAs(blob,'image.png')
-  })
-}
-
-
-const getBase64FromUrl = async (url) => {
-  const data = await fetch(url);
-  const blob = await data.blob();
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(blob); 
-    reader.onloadend = () => {
-      const base64data = reader.result;   
-      resolve(base64data);
-    }
-  });
-}
-
-//getBase64FromUrl('https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://google.com&size=64').then(console.log)
-
-
-const takeshot = async() => {
-  let div =
-     await document.getElementById('canvass');
-
-  // Use the html2canvas
-  // function to take a screenshot
-  // and append it
-  // to the output div
-  html2canvas(div,{
-    allowTaint: true,
-    foreignObjectRendering: true,
-    useCORS: true
-  }).then(
-      function (canvas) {
-        
-          document
-          .getElementById('output')
-          .appendChild(canvas);
-      })
-}
-
-
-//end  
-  const download = () => {
-    //get stage dataUrl
-        const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
-        console.log(dataURL)
-        var link = document.createElement("a");
-        link.download = "react-generator";
-        link.href = dataURL;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      image.onload = function () {
+        document.body.appendChild(this);
       };
 
+      image.src = file.data;
+    }
+  }
 
+  //end
+  const download = () => {
+    //get stage dataUrl
+    const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
+    var link = document.createElement("a");
+    link.download = "react-generator";
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
- 
   const addRectangle = () => {
     const rect = {
       x: getRandomInt(100),
       y: getRandomInt(100),
       width: 100,
       height: 100,
-      strokeWidth:3, // border width
-      stroke:"black",
-     // fill: "black",
+      strokeWidth: 3, // border width
+      stroke: "black",
+      // fill: "black",
       id: `rect${rectangles.length + 1}`,
     };
     const rects = rectangles.concat([rect]);
@@ -185,8 +123,8 @@ const takeshot = async() => {
       y: getRandomInt(100),
       width: 100,
       height: 100,
-      strokeWidth:3, // border width
-      stroke:"black",
+      strokeWidth: 3, // border width
+      stroke: "black",
       //fill: "black",
       id: `circ${circles.length + 1}`,
     };
@@ -195,7 +133,7 @@ const takeshot = async() => {
     const shs = shapes.concat([`circ${circles.length + 1}`]);
     setShapes(shs);
   };
-const drawLine = () => {
+  const drawLine = () => {
     addLine(stageEl.current.getStage(), layerEl.current);
   };
   const eraseLine = () => {
@@ -207,7 +145,7 @@ const drawLine = () => {
     setShapes(shs);
   };
   const forceUpdate = React.useCallback(() => updateState({}), []);
-  const fileChange = ev => {
+  const fileChange = (ev) => {
     let file = ev.target.files[0];
     let reader = new FileReader();
 
@@ -217,12 +155,12 @@ const drawLine = () => {
   };
   const undo = () => {
     const lastId = shapes[shapes.length - 1];
-    let index = circles.findIndex(c => c.id === lastId);
+    let index = circles.findIndex((c) => c.id === lastId);
     if (index !== -1) {
       circles.splice(index, 1);
       setCircles(circles);
     }
-    index = rectangles.findIndex(r => r.id === lastId);
+    index = rectangles.findIndex((r) => r.id === lastId);
     if (index !== -1) {
       rectangles.splice(index, 1);
       setRectangles(rectangles);
@@ -233,171 +171,195 @@ const drawLine = () => {
     forceUpdate();
   };
 
-  document.addEventListener("keydown", ev => {
+  document.addEventListener("keydown", (ev) => {
     if (ev.code === "Delete") {
-      let index = circles.findIndex(c => c.id === selectedId);
+      let index = circles.findIndex((c) => c.id === selectedId);
       if (index !== -1) {
         circles.splice(index, 1);
         setCircles(circles);
       }
-      index = rectangles.findIndex(r => r.id === selectedId);
+      index = rectangles.findIndex((r) => r.id === selectedId);
       if (index !== -1) {
         rectangles.splice(index, 1);
         setRectangles(rectangles);
       }
-     
-      forceUpdate();
 
+      forceUpdate();
     }
   });
   return (
-    
-    
     <div className="home-page">
       <div id="canvass">
-
-         <textarea autoComplete="off"  rows="4" cols="150" 
-             placeholder="Search for the required logo" id="myInput"
-           name="name"
-           onChange={event =>
-         // setName("https://www."+ event.target.value +".com/favicon.ico")// 
-           setName("https://www.google.com/s2/favicons?sz=64&domain_url="+event.target.value+".com"  )
-         // setName("http://localhost:3000/"+event.target.value+".png"  )
-        // setName("https://icons.duckduckgo.com/ip3/www."+event.target.value+".com.ico")
-          }/>
-           
-        {/* <img
-        src= {name}
-        draggable="true"
-        onDragStart={(e) => {
-          dragUrl.current = e.target.src;
-        }}
-      /> */}
-      <textarea  autoComplete="off"  rows="4" cols="150" 
-             placeholder="Enter the URL to fetch the logo" id="myInput"
-           name="name"
-           onChange={event => setName("https://www.google.com/s2/favicons?sz=64&domain_url="+event.target.value)}/>
-           <div></div>
-        <img
-        src= {(proxyUrl+name)}//name}
-        
-        draggable="true"
-        onDragStart={(e) => {
-          dragUrl.current = e.target.src;
-        }}
-      />
-      
-<div>
-</div>
-
-<ButtonGroup>
-<Button color="primary" onClick={addRectangle}>
-          Rectangle
-        </Button>
-        <Button color="primary" onClick={addCircle}>
-          Circle
-        </Button>
-        <Button color="primary" onClick={drawLine}>
-          Line
-        </Button>
-
-        <Button color="primary" onClick={eraseLine}>
-          Erase
-        </Button>
-
-        <Button color="primary" onClick={drawText}>
-          Text
-        </Button>
-
-        <Button color="primary" onClick={undo}>
-          Undo
-        </Button>
-        <Button color="primary" onClick={download}>
-          Export
-        </Button>
-      </ButtonGroup> 
-
-      
-      
-      <div
-        onDrop={(e) => {
-          e.preventDefault();
-          // register event position
-          stageEl.current.setPointersPositions(e);
-          // add image
-          setImages(
-            images.concat([
-              {
-                ...stageEl.current.getPointerPosition(),
-                src: dragUrl.current,
-              },
-            ])
-          );
-        }}
-        onDragOver={(e) => e.preventDefault()}
-      >
-     
-  
-      <Stage
-        style={{ border: '3px solid grey' }}
-        width={window.innerWidth * 0.9}
-        height={window.innerHeight - 150}
-        ref={stageEl}//,stageRef}
-        onMouseDown={e => {
-          // deselect when clicked on empty area
-          const clickedOnEmpty = e.target === e.target.getStage();
-          if (clickedOnEmpty) {
-            selectShape(null);
+        <textarea
+          autoComplete="off"
+          rows="4"
+          cols="150"
+          placeholder="Search for the required logo"
+          id="myInput"
+          name="name"
+          onChange={(event) =>
+            setName(
+              "https://www.google.com/s2/favicons?sz=128&domain_url=" +
+                event.target.value +
+                ".com"
+            )
           }
-        }}
-      >
-        <Layer ref={layerEl}>
-        {images.map((image) => {
-              return <URLImage image={image} />;
-            })}
-          {rectangles.map((rect, i) => {
-            return (
-              <Rectangle
-                key={i}
-                shapeProps={rect}
-                isSelected={rect.id === selectedId}
-                onSelect={() => {
-                  selectShape(rect.id);
-                }}
-                onChange={newAttrs => {
-                  const rects = rectangles.slice();
-                  rects[i] = newAttrs;
-                  setRectangles(rects);
-                }}
-              />
-            );
-          })}
-         
-          {circles.map((circle, i) => {
-            return (
-              <Circle
-                key={i}
-                shapeProps={circle}
-                isSelected={circle.id === selectedId}
-                onSelect={() => {
-                  selectShape(circle.id);
-                }}
-                onChange={newAttrs => {
-                  const circs = circles.slice();
-                  circs[i] = newAttrs;
-                  setCircles(circs);
-                }}
-              />
-            );
-          })}
-    
+        />
+        <textarea
+          autoComplete="off"
+          rows="4"
+          cols="150"
+          placeholder="Enter the URL to fetch the logo"
+          id="myInput"
+          name="name"
+          onChange={(event) =>
+            setName(
+              "https://www.google.com/s2/favicons?sz=128&domain_url=" +
+                event.target.value
+            )
+          }
+        />
+        <div></div>
+        <Dropzone
+          onDrop={(acceptedFiles) => {
+            y = getBase64(acceptedFiles[0]);
 
-        </Layer>
-      </Stage>
+            y.then((result) => {
+              setImageList((prev) => [...prev, result]);
+            });
+          }}
+        >
+          {({ getRootProps, getInputProps }) => (
+            <section>
+              <div {...getRootProps({ className: "dropzone" })}>
+                <input {...getInputProps()} />
+                <p>Drag 'n' drop some files here</p>
+              </div>
+            </section>
+          )}
+        </Dropzone>
+        <img
+          src={name} //name}
+          draggable="true"
+          onDragStart={(e) => {
+            dragUrl.current = e.target.src;
+          }}
+        />
+
+        <div></div>
+
+        <ButtonGroup>
+          <Button color="primary" onClick={addRectangle}>
+            Rectangle
+          </Button>
+          <Button color="primary" onClick={addCircle}>
+            Circle
+          </Button>
+          <Button color="primary" onClick={drawLine}>
+            Line
+          </Button>
+
+          <Button color="primary" onClick={eraseLine}>
+            Erase
+          </Button>
+
+          <Button color="primary" onClick={drawText}>
+            Text
+          </Button>
+
+          <Button color="primary" onClick={undo}>
+            Undo
+          </Button>
+          <Button color="primary" onClick={download}>
+            Export
+          </Button>
+        </ButtonGroup>
+        {imageList.map((item) => {
+          return (
+            <img
+              src={item}
+              draggable="true"
+              onDragStart={(e) => {
+                dragUrl.current = item;
+              }}
+            />
+          );
+        })}
+        <div
+          onDrop={(e) => {
+            e.preventDefault();
+            // register event position
+            stageEl.current.setPointersPositions(e);
+            // add image
+            setImages(
+              images.concat([
+                {
+                  ...stageEl.current.getPointerPosition(),
+                  src: dragUrl.current,
+                },
+              ])
+            );
+          }}
+          onDragOver={(e) => e.preventDefault()}
+        >
+          <Stage
+            style={{ border: "3px solid grey" }}
+            width={window.innerWidth * 0.9}
+            height={window.innerHeight - 150}
+            ref={stageEl} //,stageRef}
+            onMouseDown={(e) => {
+              // deselect when clicked on empty area
+              const clickedOnEmpty = e.target === e.target.getStage();
+              if (clickedOnEmpty) {
+                selectShape(null);
+              }
+            }}
+          >
+            <Layer ref={layerEl}>
+              {images.map((image) => {
+                return <URLImage image={image} />;
+              })}
+              {rectangles.map((rect, i) => {
+                return (
+                  <Rectangle
+                    key={i}
+                    shapeProps={rect}
+                    isSelected={rect.id === selectedId}
+                    onSelect={() => {
+                      selectShape(rect.id);
+                    }}
+                    onChange={(newAttrs) => {
+                      const rects = rectangles.slice();
+                      rects[i] = newAttrs;
+                      setRectangles(rects);
+                    }}
+                  />
+                );
+              })}
+
+              {circles.map((circle, i) => {
+                return (
+                  <Circle
+                    key={i}
+                    shapeProps={circle}
+                    isSelected={circle.id === selectedId}
+                    onSelect={() => {
+                      selectShape(circle.id);
+                    }}
+                    onChange={(newAttrs) => {
+                      const circs = circles.slice();
+                      circs[i] = newAttrs;
+                      setCircles(circs);
+                    }}
+                  />
+                );
+              })}
+            </Layer>
+          </Stage>
+        </div>
       </div>
-      </div>
-     
-    <div id="output"></div>
+
+      <div id="output"></div>
     </div>
   );
 }

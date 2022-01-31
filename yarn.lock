@@ -2411,7 +2411,7 @@ axe-core@^4.3.5:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.3.5.tgz#78d6911ba317a8262bfee292aeafcc1e04b49cc5"
   integrity sha512-WKTW1+xAzhMS5dJsxWkliixlO/PqC4VhmO9T4juNYcaTg9jzWiJsou6m5pxWYGfigWbwzJWeFY6z47a+4neRXA==
 
-axios@^0.25.0:
+axios@0.25.0, axios@^0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.25.0.tgz#349cfbb31331a9b4453190791760a8d35b093e0a"
   integrity sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==
@@ -6043,6 +6043,13 @@ no-case@^3.0.4:
     lower-case "^2.0.2"
     tslib "^2.0.3"
 
+node-base64-image@^2.0.4:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/node-base64-image/-/node-base64-image-2.0.4.tgz#0797510a1ae5826c445d16d1947398e5cbf17071"
+  integrity sha512-brh2nblaVT1/cIRH5gqDx6VpdmjCh2P1f/XpE6j+IJpXWfC7NkkclEaMcZSQ/KvZrXLML0z9a5qN0mRQ4LGMJA==
+  dependencies:
+    axios "0.25.0"
+
 node-forge@^1.2.0:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-1.2.1.tgz#82794919071ef2eb5c509293325cec8afd0fd53c"
@@ -7280,7 +7287,7 @@ react-router@6.2.1:
   dependencies:
     history "^5.2.0"
 
-react-scripts@5.0.0:
+react-scripts@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/react-scripts/-/react-scripts-5.0.0.tgz#6547a6d7f8b64364ef95273767466cc577cb4b60"
   integrity sha512-3i0L2CyIlROz7mxETEdfif6Sfhh9Lfpzi10CtcGs1emDQStmZfWjJbAIMtRD0opVUjQuFWqHZyRZ9PPzKCFxWg==
