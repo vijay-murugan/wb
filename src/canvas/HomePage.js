@@ -349,6 +349,9 @@ function HomePage() {
           id = "logo"
           src={name} //name}
           draggable="true"
+          onDragStart={(e) => {
+            dragUrl.current = e.target.src;
+          }}
         />
         <img
           src={name2} //name}
@@ -420,9 +423,9 @@ function HomePage() {
               <Button color="primary" onClick={undo} title="Undo">
                 <i class="fa-solid fa-delete-left"></i>
               </Button>
-              {/* <Button color="primary" onClick={download} title="download">
+              <Button color="primary" onClick={download} title="download">
                 Export
-              </Button> */}
+              </Button>
               {/* <Button color="primary" onClick={display}>
                 Save to db
               </Button> */}
