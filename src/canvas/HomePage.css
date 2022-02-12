@@ -58,6 +58,14 @@ button{
 } */
 
 
+.dropzone{
+  display:grid;
+  margin-left: 500px;
+}
+
+.myInput{
+  display:grid;
+}
 
 .container{
   display: grid;
@@ -116,15 +124,15 @@ display: inline-block;
 }
 
 
-.upload-icon {
+/* .upload-icon {
 
   background-size: 100%;
   text-align: center;
   margin: 0 auto;
   padding: 10px;
-}
+} */
 
-.drop-container {
+/* .drop-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,7 +140,7 @@ display: inline-block;
   width: 400px;
   height: 100px;
   border: 4px dashed #f87a47;
-}
+} */
 
 .twitter-share-button:hover {
   color: #f87a47;

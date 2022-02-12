@@ -294,8 +294,7 @@ function HomePage() {
   });
   return (
     <div className="home-page">
-      <div id="canvass">
-        <div></div>
+      
     {/* For the icon components  */}
         <link
           rel="stylesheet"
@@ -318,6 +317,7 @@ function HomePage() {
           }
           
         /> */}
+         <div id = "dropzone-area">
         <textarea
           autoComplete="off"
           rows="4"
@@ -344,7 +344,7 @@ function HomePage() {
           }
         /> */}
         <div></div>
-        
+       
         <img
           id = "logo"
           src={name} //name}
@@ -358,6 +358,7 @@ function HomePage() {
           draggable="true"
         />
         {fn()}
+        
         <Dropzone
           onDrop={(acceptedFiles) => {
             y = getBase64(acceptedFiles[0]);
@@ -371,18 +372,19 @@ function HomePage() {
         >
           {({ getRootProps, getInputProps }) => (
             <section>
-              <div className="drop-container">
+       
               <div {...getRootProps({ className: "dropzone" })}>
                 <input {...getInputProps()} />
    
-                <div className="upload-icon"></div>
+                
     Drag & Drop icons here or click to upload then drag & drop icons generated to canvas
 
-              </div>
+              
               </div>
             </section>
           )}
         </Dropzone>
+        </div>
         {/* <img
           src={name} //name}
           draggable="true"
@@ -435,7 +437,7 @@ function HomePage() {
               </Button>
               {isToggled }
             </div>
-            {/* {imageToBase64("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://go.com&size=128") // Path to the image
+            {imageToBase64("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://go.com&size=128") // Path to the image
     .then(
         (response) => {
             console.log("data:image/png;base64,"+response); // "cGF0aC90by9maWxlLmpwZw=="
@@ -445,7 +447,7 @@ function HomePage() {
         (error) => {
             console.log(error); // Logs an error if there was one
         }
-    )} */}
+    )}
             {imageList.map((item) => {
           return (
             <img
@@ -583,7 +585,7 @@ function HomePage() {
           </div>
         </div>
       </div>
-    </div>
+
   );
 }
 export default HomePage;
