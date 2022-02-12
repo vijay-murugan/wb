@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import useFirebase from  '../auths/useFirebase'
 import useFirebaseG from  '../auths/useFBgoogle'
 import useFirebaseF from '../auths/useFBfacebook'

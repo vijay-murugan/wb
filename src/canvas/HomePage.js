@@ -1,12 +1,14 @@
-import React, { useState, useRef } from "react";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
+import React, { useState } from "react";
+//import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { Button } from "reactstrap";
 
-import Dropzone from "react-dropzone";
+import {TwitterShareButton, TwitterIcon} from "react-share"
 
+import Dropzone from "react-dropzone";
+//import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomePage.css";
-import { Stage, Layer, Image } from "react-konva";
+import { Image as KonvaImage, Stage, Layer, Image, Rect } from "react-konva";
 import Rectangle from "./Rectangle";
 import Circle from "./Circle";
 import { addLine } from "./line";
@@ -14,6 +16,8 @@ import { addTextNode } from "./textNode";
 import useImage from "use-image";
 import { v1 as uuidv1 } from "uuid";
 import html2canvas from "html2canvas";
+
+const imageToBase64 = require('image-to-base64');
 
 uuidv1();
 //https://www.google.com/s2/favicons?sz=128&domain_url=yahoo.com
@@ -32,6 +36,13 @@ const URLImage = ({ image }) => {
   );
 };
 
+
+const fn = () => {
+  var s = document.getElementById('logo')
+  console.log(s)
+}
+
+
 function HomePage() {
   const [rectangles, setRectangles] = useState([]);
   const [circles, setCircles] = useState([]);
@@ -41,31 +52,37 @@ function HomePage() {
   const stageEl = React.createRef();
   const layerEl = React.createRef();
   const [name, setName] = React.useState("");
+  const [name2, setName2] = React.useState("");
   const dragUrl = React.useRef();
   const [images, setImages] = React.useState([]);
+  const [exp, setExp] = React.useState([]);
   let y;
   const [imageList, setImageList] = React.useState([]);
+  const [dispImg, setDispImg] = React.useState([]);
+
+  const [tweet, setTweet] = React.useState("");
+
+  const [isToggled, setIsToggled] = React.useState(false);
+  const [show, setShow] = React.useState(false);
 
   const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
   };
 
+  
   async function getBase64(file) {
     let result_base64 = await new Promise((resolve) => {
       let reader = new FileReader();
       reader.onload = (e) => resolve(reader.result);
+      
       reader.readAsDataURL(file);
     });
+    console.log(result_base64);
     return result_base64;
   }
 
   const takeshot = async () => {
     let div = await document.getElementById("canvass");
-
-    // Use the html2canvas
-    // function to take a screenshot
-    // and append it
-    // to the output div
     html2canvas(div, {
       allowTaint: true,
       foreignObjectRendering: true,
@@ -89,6 +106,77 @@ function HomePage() {
     }
   }
 
+//   function toDataUrl(url, callback) {
+//     var xhr = new XMLHttpRequest();
+//     xhr.onload = function() {
+//         var reader = new FileReader();
+//         reader.onloadend = function() {
+//             callback(reader.result);
+//         }
+//         reader.readAsDataURL(xhr.response);
+//     };
+//     xhr.open('GET', url);
+//     xhr.responseType = 'blob';
+//     xhr.send();
+// }
+
+// const imagepath = "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://ap.com&size=128"
+
+// toDataUrl(imagepath, function(myBase64) {
+//   console.log(myBase64); // myBase64 is the base64 string
+// });
+
+  const handleChange = (value) => {
+    setName(
+      "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
+        value +
+        ".com"
+    // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
+    );
+    setName2("https://www.google.com/s2/favicons?sz=128&domain_url=" + value);
+  };
+
+  const display = () => {
+    const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
+
+    const payload = {
+      img: dataURL,
+    };
+    // console.log(JSON.stringify(payload))
+
+    //data.append("json", JSON.stringify(payload))
+    fetch("http://localhost:5000/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(function (res) {
+        return res.json();
+      })
+      .then((res) => console.log(res));
+  };
+  var x = 1;
+  const erase = () => {
+    setDispImg(null);
+    setShow(false);
+  };
+
+
+
+
+  const preview = () => {
+    const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
+    var link = document.createElement("a");
+    link.href = dataURL;
+
+    let y;
+
+    setDispImg(link.href);
+
+    setShow(true);
+  };
   //end
   const download = () => {
     //get stage dataUrl
@@ -99,6 +187,23 @@ function HomePage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const addBG = () => {
+    const rect = {
+      x: getRandomInt(100),
+      y: getRandomInt(100),
+      width: 100,
+      height: 100,
+      strokeWidth: 3, // border width
+      stroke: "black",
+      fill: "white",
+      id: `rect${rectangles.length + 1}`,
+    };
+    const rects = rectangles.concat([rect]);
+    setRectangles(rects);
+    const shs = shapes.concat([`rect${rectangles.length + 1}`]);
+    setShapes(shs);
   };
 
   const addRectangle = () => {
@@ -190,7 +295,13 @@ function HomePage() {
   return (
     <div className="home-page">
       <div id="canvass">
-        <textarea
+        <div></div>
+    {/* For the icon components  */}
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        />
+        {/* <textarea
           autoComplete="off"
           rows="4"
           cols="150"
@@ -203,9 +314,22 @@ function HomePage() {
                 event.target.value +
                 ".com"
             )
+            
+          }
+          
+        /> */}
+        <textarea
+          autoComplete="off"
+          rows="4"
+          cols="150"
+          placeholder="Search for the required logo"
+          id="myInput"
+          name="name"
+          onChange={(event) =>
+            handleChange(event.target.value)
           }
         />
-        <textarea
+        {/* <textarea
           autoComplete="off"
           rows="4"
           cols="150"
@@ -218,63 +342,108 @@ function HomePage() {
                 event.target.value
             )
           }
-        />
+        /> */}
         <div></div>
+        
+        <img
+          id = "logo"
+          src={name} //name}
+          draggable="true"
+        />
+        <img
+          src={name2} //name}
+          draggable="true"
+        />
+        {fn()}
         <Dropzone
           onDrop={(acceptedFiles) => {
             y = getBase64(acceptedFiles[0]);
-
+            // console.log(y)
             y.then((result) => {
+              console.log(result)
               setImageList((prev) => [...prev, result]);
             });
+            y.catch((e)=>console.log(e))
           }}
         >
           {({ getRootProps, getInputProps }) => (
             <section>
+              <div className="drop-container">
               <div {...getRootProps({ className: "dropzone" })}>
                 <input {...getInputProps()} />
-                <p>Drag 'n' drop some files here</p>
+   
+                <div className="upload-icon"></div>
+    Drag & Drop icons here or click to upload then drag & drop icons generated to canvas
+
+              </div>
               </div>
             </section>
           )}
         </Dropzone>
-        <img
+        {/* <img
           src={name} //name}
           draggable="true"
           onDragStart={(e) => {
             dragUrl.current = e.target.src;
           }}
-        />
-
+        /> */}
         <div></div>
 
-        <ButtonGroup>
-          <Button color="primary" onClick={addRectangle}>
-            Rectangle
-          </Button>
-          <Button color="primary" onClick={addCircle}>
-            Circle
-          </Button>
-          <Button color="primary" onClick={drawLine}>
-            Line
-          </Button>
+          <div className="container">
+            {/* <div className="parent flex-parent"> */}
+            <div
+              className="bts"
+              //  className="child btn-group-vertical"
+              role="group"
+              aria-label="Basic example"
+            >
+              <div></div>
+              <Button color="primary" onClick={addRectangle} title="Square">
+                <i class="fa-regular fa-square"></i>
+                {/* <img id="sqr-img" src="reshot-icon-square-S3RGTA8EF5.svg" /> */}
+              </Button>
+              <Button color="primary" onClick={addCircle} title="Circle">
+                <i class="fa-regular fa-circle"></i>
+              </Button>
+              <Button color="primary" onClick={drawLine} title="Pen">
+                <i class="fa-solid fa-pencil"></i>
+              </Button>
 
-          <Button color="primary" onClick={eraseLine}>
-            Erase
-          </Button>
+              <Button color="primary" onClick={eraseLine} title="Eraser">
+                <i class="fa-solid fa-eraser"></i>
+              </Button>
 
-          <Button color="primary" onClick={drawText}>
-            Text
-          </Button>
+              <Button color="primary" onClick={drawText} title="Text">
+                <i class="fa-solid fa-font"></i>
+              </Button>
 
-          <Button color="primary" onClick={undo}>
-            Undo
-          </Button>
-          <Button color="primary" onClick={download}>
-            Export
-          </Button>
-        </ButtonGroup>
-        {imageList.map((item) => {
+              <Button color="primary" onClick={undo} title="Undo">
+                <i class="fa-solid fa-delete-left"></i>
+              </Button>
+              {/* <Button color="primary" onClick={download} title="download">
+                Export
+              </Button> */}
+              {/* <Button color="primary" onClick={display}>
+                Save to db
+              </Button> */}
+              <Button color="primary" onClick={preview} title="Preview">
+                {/* onClick={() => setIsToggled(true)}> */}
+                Preview
+              </Button>
+              {isToggled }
+            </div>
+            {/* {imageToBase64("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://go.com&size=128") // Path to the image
+    .then(
+        (response) => {
+            console.log("data:image/png;base64,"+response); // "cGF0aC90by9maWxlLmpwZw=="
+        }
+    )
+    .catch(
+        (error) => {
+            console.log(error); // Logs an error if there was one
+        }
+    )} */}
+            {imageList.map((item) => {
           return (
             <img
               src={item}
@@ -296,70 +465,121 @@ function HomePage() {
                 {
                   ...stageEl.current.getPointerPosition(),
                   src: dragUrl.current,
+                 
                 },
               ])
             );
           }}
           onDragOver={(e) => e.preventDefault()}
         >
-          <Stage
-            style={{ border: "3px solid grey" }}
-            width={window.innerWidth * 0.9}
-            height={window.innerHeight - 150}
-            ref={stageEl} //,stageRef}
-            onMouseDown={(e) => {
-              // deselect when clicked on empty area
-              const clickedOnEmpty = e.target === e.target.getStage();
-              if (clickedOnEmpty) {
-                selectShape(null);
-              }
-            }}
-          >
-            <Layer ref={layerEl}>
-              {images.map((image) => {
-                return <URLImage image={image} />;
-              })}
-              {rectangles.map((rect, i) => {
-                return (
-                  <Rectangle
-                    key={i}
-                    shapeProps={rect}
-                    isSelected={rect.id === selectedId}
-                    onSelect={() => {
-                      selectShape(rect.id);
-                    }}
-                    onChange={(newAttrs) => {
-                      const rects = rectangles.slice();
-                      rects[i] = newAttrs;
-                      setRectangles(rects);
-                    }}
-                  />
-                );
-              })}
+            <div
+              id="child-canvas"
+            >
+              <Stage
+                style={{
+                  border: "1px solid grey",
+                  width: "1200px",
+                  position: "relative",
+                  left: "50px",
+                  bottom: "20px",
+                  top: "5px",
+                  background: "#f4f7f6",
+                }}
+                width={window.innerWidth * 0.87}
+                height={window.innerHeight - 150}
+                ref={stageEl} //,stageRef}
+                onMouseDown={(e) => {
+                  // deselect when clicked on empty area
+                  const clickedOnEmpty = e.target === e.target.getStage();
+                  if (clickedOnEmpty) {
+                    selectShape(null);
+                  }
+                }}
+               
+              >
+                <Layer ref={layerEl}>
+               
+                  {images.map((image) => {
+                    return <URLImage image={image} />;
+                  })}
 
-              {circles.map((circle, i) => {
-                return (
-                  <Circle
-                    key={i}
-                    shapeProps={circle}
-                    isSelected={circle.id === selectedId}
-                    onSelect={() => {
-                      selectShape(circle.id);
-                    }}
-                    onChange={(newAttrs) => {
-                      const circs = circles.slice();
-                      circs[i] = newAttrs;
-                      setCircles(circs);
-                    }}
+                  {rectangles.map((rect, i) => {
+                    return (
+                      <Rectangle
+                        key={i}
+                        shapeProps={rect}
+                        isSelected={rect.id === selectedId}
+                        onSelect={() => {
+                          selectShape(rect.id);
+                        }}
+                        onChange={(newAttrs) => {
+                          const rects = rectangles.slice();
+                          rects[i] = newAttrs;
+                          setRectangles(rects);
+                        }}
+                      />
+                    );
+                  })}
+
+                  {circles.map((circle, i) => {
+                    return (
+                      <Circle
+                        key={i}
+                        shapeProps={circle}
+                        isSelected={circle.id === selectedId}
+                        onSelect={() => {
+                          selectShape(circle.id);
+                        }}
+                        onChange={(newAttrs) => {
+                          const circs = circles.slice();
+                          circs[i] = newAttrs;
+                          setCircles(circs);
+                        }}
+                      />
+                    );
+                  })}
+                </Layer>
+              </Stage>
+            
+
+            <div className="child-preview" id="preview">
+              <img id="preview-image" src={dispImg} width="1000"></img>
+          
+              <div className="tweet-text" id="textbox-chars">
+                {show ? (
+                  <textarea
+                    value={tweet}
+                    onChange={(e) => setTweet(e.target.value)}
                   />
-                );
-              })}
-            </Layer>
-          </Stage>
+                ) : null}
+                <link rel="canonical" href="/web/tweet-button"></link>
+                {show ? (
+                  <a
+                    class="twitter-share-button"
+                    href={`https://twitter.com/intent/tweet?text=${tweet}`}
+                    data-size="large"
+                  >
+                    Tweet
+                  </a>
+                ) : null}
+                {show ? (
+                  <button
+                    type="button"
+                    id="reset-btn"
+                    class="btn btn-primary"
+                    onClick={erase}
+                  >
+                    Reset
+                  </button>
+                ) : null}
+              </div>
+
+              
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      <div id="output"></div>
     </div>
   );
 }

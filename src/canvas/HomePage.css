@@ -2,7 +2,7 @@ textarea {
     width: 50%;
     height: 50px;
     padding: 12px 20px;
-    margin: 0px 20px 10px 60px;
+    margin: 20px 20px 10px 60px;
     box-sizing: border-box;
     border: 2px solid #ccc;
     border-radius: 4px;
@@ -17,5 +17,126 @@ img{
 }
 
 button{
-  margin: 0px 0px 5px 10px;
+  margin: 0px 0px 0px 0px;
+  flex:1
 }
+
+.btn-primary {
+  color: white;
+  background-color: #f87a47;
+  border-color: #ff4800
+  
+}
+
+.btn-primary:hover {
+  color: #f87a47;
+  background-color: WHITE;
+  border-color: #303636
+}
+
+.btn-primary:active
+{
+    background-color:grey !important; /* add here any color */
+}
+
+.btn-primary:disabled {
+  color: #fff;
+  background-color: #EB984E;
+  border-color: #EB984E;
+}
+/* 
+.flex-parent {
+  display: inline-block;
+}
+
+.canvas{
+  display: inline-block;
+}
+
+.preview{
+  display: inline-block;
+} */
+
+
+
+.container{
+  display: grid;
+  /* grid-template-columns: 0fr 0fr ; */
+  grid-auto-flow: column;
+  grid-auto-rows: 150px;
+  margin-left: 0px;
+}
+
+.bts{
+  display: grid;
+  margin-left: 0px;
+  /* grid-template-columns: 0fr; */
+   
+}
+
+.tweet-text{
+  margin-left:100px;
+}
+
+#tweet-text-id{
+  font-size: 18pt;
+   height: 50px; 
+   width: 800px; 
+}
+
+#reset-btn{
+  margin-top:5px;
+  margin-left:1px;
+}
+
+#publish-btn{
+  margin-top:5px;
+  margin-left:745px;
+}
+
+#child-canvas{
+  margin-left:0px;
+  display:inline-flex;
+}
+
+.child-preview{
+display: inline-block;
+}
+
+.twitter-share-button{
+  display: inline-flex;
+  /* align-self: flex-end; */
+  color: #fff;
+  background-color: #f87a47;
+  border-color: #ff4800;
+  padding: 9px 18px;
+  border-radius: 5px;
+  margin:16px ;
+  text-decoration: none;
+}
+
+
+.upload-icon {
+
+  background-size: 100%;
+  text-align: center;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.drop-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 40px;
+  width: 400px;
+  height: 100px;
+  border: 4px dashed #f87a47;
+}
+
+.twitter-share-button:hover {
+  color: #f87a47;
+  background-color: WHITE;
+  border-color: #303636
+}
+

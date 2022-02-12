@@ -110,6 +110,7 @@ export const addTextNode = (stage, layer) => {
       tr.show();
       tr.forceUpdate();
       layer.draw();
+      
     }
     function setTextareaWidth(newWidth) {
       if (!newWidth) {
@@ -150,11 +151,15 @@ export const addTextNode = (stage, layer) => {
     function handleOutsideClick(e) {
       if (e.target !== textarea) {
         removeTextarea();
+        
       }
+       tr.hide();
     }
     setTimeout(() => {
       window.addEventListener("click", handleOutsideClick);
+      
     });
+    
   });
   return id;
 };
