@@ -37,10 +37,6 @@ const URLImage = ({ image }) => {
 };
 
 
-const fn = () => {
-  var s = document.getElementById('logo')
-  console.log(s)
-}
 
 
 function HomePage() {
@@ -65,10 +61,51 @@ function HomePage() {
   const [isToggled, setIsToggled] = React.useState(false);
   const [show, setShow] = React.useState(false);
 
+  const [val,setVal] = React.useState([""])
+  const [val2,setVal2] = React.useState([""])
+
   const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
   };
-
+  
+  const getBase64Image2 = (url) => {
+    const varimg2 = document.createElement("img"); //new Image();
+    varimg2.setAttribute('crossOrigin', 'anonymous');
+    varimg2.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = varimg2.width;
+      canvas.height = varimg2.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(varimg2, 0, 0);
+      const dataURL = canvas.toDataURL("image/png");
+      // console.log("dataurl = ",dataURL)
+      setVal2 (dataURL)
+      
+    }
+    varimg2.src = url
+    // console.log("conso",val)
+    return val2;
+    
+  }
+  const getBase64Image = (url) => {
+    const varimg = document.createElement("img"); //new Image();
+    varimg.setAttribute('crossOrigin', 'anonymous');
+    varimg.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = varimg.width;
+      canvas.height = varimg.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(varimg, 0, 0);
+      const dataURL = canvas.toDataURL("image/png");
+      // console.log("dataurl = ",dataURL)
+      setVal (dataURL)
+      
+    }
+    varimg.src = url
+    // console.log("conso",val)
+    return val;
+    
+  }
   
   async function getBase64(file) {
     let result_base64 = await new Promise((resolve) => {
@@ -106,34 +143,16 @@ function HomePage() {
     }
   }
 
-//   function toDataUrl(url, callback) {
-//     var xhr = new XMLHttpRequest();
-//     xhr.onload = function() {
-//         var reader = new FileReader();
-//         reader.onloadend = function() {
-//             callback(reader.result);
-//         }
-//         reader.readAsDataURL(xhr.response);
-//     };
-//     xhr.open('GET', url);
-//     xhr.responseType = 'blob';
-//     xhr.send();
-// }
-
-// const imagepath = "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://ap.com&size=128"
-
-// toDataUrl(imagepath, function(myBase64) {
-//   console.log(myBase64); // myBase64 is the base64 string
-// });
 
   const handleChange = (value) => {
     setName(
-      "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www."+
+      // "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
         value +
-        ".com"
+        ".com&size=128"
     // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
     );
-    setName2("https://www.google.com/s2/favicons?sz=128&domain_url=" + value);
+    setName2( "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url="+ value+"&size=128");
   };
 
   const display = () => {
@@ -317,6 +336,7 @@ function HomePage() {
           }
           
         /> */}
+        {/* <img src = "apple.png" draggable="true"/> */}
          <div id = "dropzone-area">
         <textarea
           autoComplete="off"
@@ -344,22 +364,27 @@ function HomePage() {
           }
         /> */}
         <div></div>
-       
+       {}
         <img
           id = "logo"
-          src={name} //name}
+          src={getBase64Image(name)} //name}
           draggable="true"
           onDragStart={(e) => {
             dragUrl.current = e.target.src;
           }}
         />
         <img
-          src={name2} //name}
+          src={getBase64Image2(name2)} //name}
           draggable="true"
+          onDragStart={(e) => {
+            dragUrl.current = e.target.src;
+          }}
         />
-        {fn()}
+       
         
-        <Dropzone
+       
+        </div>
+        {/* <Dropzone
           onDrop={(acceptedFiles) => {
             y = getBase64(acceptedFiles[0]);
             // console.log(y)
@@ -383,8 +408,8 @@ function HomePage() {
               </div>
             </section>
           )}
-        </Dropzone>
-        </div>
+        </Dropzone> */}
+
         {/* <img
           src={name} //name}
           draggable="true"
@@ -392,10 +417,12 @@ function HomePage() {
             dragUrl.current = e.target.src;
           }}
         /> */}
+
+{/* <img src = {getBase64Image("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://apple.com&size=128")}/> */}
+
         <div></div>
 
           <div className="container">
-            {/* <div className="parent flex-parent"> */}
             <div
               className="bts"
               //  className="child btn-group-vertical"
@@ -405,7 +432,7 @@ function HomePage() {
               <div></div>
               <Button color="primary" onClick={addRectangle} title="Square">
                 <i class="fa-regular fa-square"></i>
-                {/* <img id="sqr-img" src="reshot-icon-square-S3RGTA8EF5.svg" /> */}
+       
               </Button>
               <Button color="primary" onClick={addCircle} title="Circle">
                 <i class="fa-regular fa-circle"></i>
@@ -425,19 +452,19 @@ function HomePage() {
               <Button color="primary" onClick={undo} title="Undo">
                 <i class="fa-solid fa-delete-left"></i>
               </Button>
-              <Button color="primary" onClick={download} title="download">
+              {/* <Button color="primary" onClick={download} title="download">
                 Export
               </Button>
-              {/* <Button color="primary" onClick={display}>
+              <Button color="primary" onClick={display}>
                 Save to db
               </Button> */}
               <Button color="primary" onClick={preview} title="Preview">
-                {/* onClick={() => setIsToggled(true)}> */}
+   
                 Preview
               </Button>
               {isToggled }
             </div>
-            {imageToBase64("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://go.com&size=128") // Path to the image
+            {/* {imageToBase64("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://go.com&size=128") // Path to the image
     .then(
         (response) => {
             console.log("data:image/png;base64,"+response); // "cGF0aC90by9maWxlLmpwZw=="
@@ -447,7 +474,7 @@ function HomePage() {
         (error) => {
             console.log(error); // Logs an error if there was one
         }
-    )}
+    )} */}
             {imageList.map((item) => {
           return (
             <img
@@ -580,8 +607,8 @@ function HomePage() {
               </div>
 
               
-              </div>
-            </div>
+                </div>
+            </div> 
           </div>
         </div>
       </div>

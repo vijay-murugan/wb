@@ -57,10 +57,17 @@ button{
   display: inline-block;
 } */
 
+#dropzone-area{
+  display:grid;
+  grid-auto-flow: column;
+  grid-auto-rows: 150px;
+  margin-left: 0px;
+}
 
 .dropzone{
   display:grid;
   margin-left: 500px;
+  
 }
 
 .myInput{
