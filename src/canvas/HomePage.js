@@ -2,8 +2,6 @@ import React, { useState } from "react";
 //import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { Button } from "reactstrap";
 
-import {TwitterShareButton, TwitterIcon} from "react-share"
-
 import Dropzone from "react-dropzone";
 //import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -17,7 +15,7 @@ import useImage from "use-image";
 import { v1 as uuidv1 } from "uuid";
 import html2canvas from "html2canvas";
 
-const imageToBase64 = require('image-to-base64');
+const imageToBase64 = require("image-to-base64");
 
 uuidv1();
 //https://www.google.com/s2/favicons?sz=128&domain_url=yahoo.com
@@ -35,9 +33,6 @@ const URLImage = ({ image }) => {
     />
   );
 };
-
-
-
 
 function HomePage() {
   const [rectangles, setRectangles] = useState([]);
@@ -60,17 +55,17 @@ function HomePage() {
 
   const [isToggled, setIsToggled] = React.useState(false);
   const [show, setShow] = React.useState(false);
-
-  const [val,setVal] = React.useState([""])
-  const [val2,setVal2] = React.useState([""])
+  const [canvasShow, setCanvasShow] = React.useState(true);
+  const [val, setVal] = React.useState([""]);
+  const [val2, setVal2] = React.useState([""]);
 
   const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
   };
-  
+
   const getBase64Image2 = (url) => {
     const varimg2 = document.createElement("img"); //new Image();
-    varimg2.setAttribute('crossOrigin', 'anonymous');
+    varimg2.setAttribute("crossOrigin", "anonymous");
     varimg2.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = varimg2.width;
@@ -79,17 +74,15 @@ function HomePage() {
       ctx.drawImage(varimg2, 0, 0);
       const dataURL = canvas.toDataURL("image/png");
       // console.log("dataurl = ",dataURL)
-      setVal2 (dataURL)
-      
-    }
-    varimg2.src = url
+      setVal2(dataURL);
+    };
+    varimg2.src = url;
     // console.log("conso",val)
     return val2;
-    
-  }
+  };
   const getBase64Image = (url) => {
     const varimg = document.createElement("img"); //new Image();
-    varimg.setAttribute('crossOrigin', 'anonymous');
+    varimg.setAttribute("crossOrigin", "anonymous");
     varimg.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = varimg.width;
@@ -98,20 +91,18 @@ function HomePage() {
       ctx.drawImage(varimg, 0, 0);
       const dataURL = canvas.toDataURL("image/png");
       // console.log("dataurl = ",dataURL)
-      setVal (dataURL)
-      
-    }
-    varimg.src = url
+      setVal(dataURL);
+    };
+    varimg.src = url;
     // console.log("conso",val)
     return val;
-    
-  }
-  
+  };
+
   async function getBase64(file) {
     let result_base64 = await new Promise((resolve) => {
       let reader = new FileReader();
       reader.onload = (e) => resolve(reader.result);
-      
+
       reader.readAsDataURL(file);
     });
     console.log(result_base64);
@@ -143,16 +134,19 @@ function HomePage() {
     }
   }
 
-
   const handleChange = (value) => {
     setName(
-      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www."+
-      // "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www." +
+        // "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
         value +
         ".com&size=128"
-    // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
+      // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
     );
-    setName2( "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url="+ value+"&size=128");
+    setName2(
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=" +
+        value +
+        "&size=128"
+    );
   };
 
   const display = () => {
@@ -180,10 +174,8 @@ function HomePage() {
   const erase = () => {
     setDispImg(null);
     setShow(false);
+    setCanvasShow(true);
   };
-
-
-
 
   const preview = () => {
     const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
@@ -195,6 +187,7 @@ function HomePage() {
     setDispImg(link.href);
 
     setShow(true);
+    setCanvasShow(false);
   };
   //end
   const download = () => {
@@ -313,169 +306,80 @@ function HomePage() {
   });
   return (
     <div className="home-page">
-      
-    {/* For the icon components  */}
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-        />
-        {/* <textarea
-          autoComplete="off"
-          rows="4"
-          cols="150"
-          placeholder="Search for the required logo"
-          id="myInput"
-          name="name"
-          onChange={(event) =>
-            setName(
-              "https://www.google.com/s2/favicons?sz=128&domain_url=" +
-                event.target.value +
-                ".com"
-            )
-            
-          }
-          
-        /> */}
-        {/* <img src = "apple.png" draggable="true"/> */}
-         <div id = "dropzone-area">
-        <textarea
-          autoComplete="off"
-          rows="4"
-          cols="150"
-          placeholder="Search for the required logo"
-          id="myInput"
-          name="name"
-          onChange={(event) =>
-            handleChange(event.target.value)
-          }
-        />
-        {/* <textarea
-          autoComplete="off"
-          rows="4"
-          cols="150"
-          placeholder="Enter the URL to fetch the logo"
-          id="myInput"
-          name="name"
-          onChange={(event) =>
-            setName(
-              "https://www.google.com/s2/favicons?sz=128&domain_url=" +
-                event.target.value
-            )
-          }
-        /> */}
-        <div></div>
-       {}
-        <img
-          id = "logo"
-          src={getBase64Image(name)} //name}
-          draggable="true"
-          onDragStart={(e) => {
-            dragUrl.current = e.target.src;
-          }}
-        />
-        <img
-          src={getBase64Image2(name2)} //name}
-          draggable="true"
-          onDragStart={(e) => {
-            dragUrl.current = e.target.src;
-          }}
-        />
-       
-        
-       
-        </div>
-        {/* <Dropzone
-          onDrop={(acceptedFiles) => {
-            y = getBase64(acceptedFiles[0]);
-            // console.log(y)
-            y.then((result) => {
-              console.log(result)
-              setImageList((prev) => [...prev, result]);
-            });
-            y.catch((e)=>console.log(e))
-          }}
-        >
-          {({ getRootProps, getInputProps }) => (
-            <section>
-       
-              <div {...getRootProps({ className: "dropzone" })}>
-                <input {...getInputProps()} />
-   
-                
-    Drag & Drop icons here or click to upload then drag & drop icons generated to canvas
+      {/* For the icon components  */}
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      />
 
-              
-              </div>
-            </section>
-          )}
-        </Dropzone> */}
+      <textarea
+        autoComplete="off"
+        placeholder="Search for the required logo"
+        id="myInput"
+        name="name"
+        className="textzone"
+        cols="20"
+        onChange={(event) => handleChange(event.target.value)}
+      />
 
-        {/* <img
-          src={name} //name}
-          draggable="true"
-          onDragStart={(e) => {
-            dragUrl.current = e.target.src;
-          }}
-        /> */}
+      <div></div>
+      {}
+      <img
+        id="logo"
+        src={getBase64Image(name)} //name}
+        draggable="true"
+        onDragStart={(e) => {
+          dragUrl.current = e.target.src;
+        }}
+      />
+      <img
+        src={getBase64Image2(name2)} //name}
+        draggable="true"
+        onDragStart={(e) => {
+          dragUrl.current = e.target.src;
+        }}
+      />
 
-{/* <img src = {getBase64Image("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://apple.com&size=128")}/> */}
+      <div></div>
 
-        <div></div>
+      <div className="container">
+        {canvasShow ? (
+          <div className="bts" role="group" aria-label="Basic example">
+            <div></div>
+            <Button color="primary" onClick={addRectangle} title="Square">
+              <i class="fa-regular fa-square"></i>
+            </Button>
+            <Button color="primary" onClick={addCircle} title="Circle">
+              <i class="fa-regular fa-circle"></i>
+            </Button>
+            <Button color="primary" onClick={drawLine} title="Pen">
+              <i class="fa-solid fa-pencil"></i>
+            </Button>
 
-          <div className="container">
-            <div
-              className="bts"
-              //  className="child btn-group-vertical"
-              role="group"
-              aria-label="Basic example"
-            >
-              <div></div>
-              <Button color="primary" onClick={addRectangle} title="Square">
-                <i class="fa-regular fa-square"></i>
-       
-              </Button>
-              <Button color="primary" onClick={addCircle} title="Circle">
-                <i class="fa-regular fa-circle"></i>
-              </Button>
-              <Button color="primary" onClick={drawLine} title="Pen">
-                <i class="fa-solid fa-pencil"></i>
-              </Button>
+            <Button color="primary" onClick={eraseLine} title="Eraser">
+              <i class="fa-solid fa-eraser"></i>
+            </Button>
 
-              <Button color="primary" onClick={eraseLine} title="Eraser">
-                <i class="fa-solid fa-eraser"></i>
-              </Button>
+            <Button color="primary" onClick={drawText} title="Text">
+              <i class="fa-solid fa-font"></i>
+            </Button>
 
-              <Button color="primary" onClick={drawText} title="Text">
-                <i class="fa-solid fa-font"></i>
-              </Button>
-
-              <Button color="primary" onClick={undo} title="Undo">
-                <i class="fa-solid fa-delete-left"></i>
-              </Button>
-              {/* <Button color="primary" onClick={download} title="download">
+            <Button color="primary" onClick={undo} title="Undo">
+              <i class="fa-solid fa-delete-left"></i>
+            </Button>
+            {/* <Button color="primary" onClick={download} title="download">
                 Export
               </Button>
               <Button color="primary" onClick={display}>
                 Save to db
               </Button> */}
-              <Button color="primary" onClick={preview} title="Preview">
-   
-                Preview
-              </Button>
-              {isToggled }
-            </div>
-            {/* {imageToBase64("https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://go.com&size=128") // Path to the image
-    .then(
-        (response) => {
-            console.log("data:image/png;base64,"+response); // "cGF0aC90by9maWxlLmpwZw=="
-        }
-    )
-    .catch(
-        (error) => {
-            console.log(error); // Logs an error if there was one
-        }
-    )} */}
-            {imageList.map((item) => {
+            <Button color="primary" onClick={preview} title="Preview">
+              Preview
+            </Button>
+            {isToggled}
+          </div>
+        ) : null}
+        {imageList.map((item) => {
           return (
             <img
               src={item}
@@ -497,22 +401,20 @@ function HomePage() {
                 {
                   ...stageEl.current.getPointerPosition(),
                   src: dragUrl.current,
-                 
                 },
               ])
             );
           }}
           onDragOver={(e) => e.preventDefault()}
         >
-            <div
-              id="child-canvas"
-            >
+          {canvasShow ? (
+            <div id="child-canvas">
               <Stage
                 style={{
                   border: "1px solid grey",
                   width: "1200px",
                   position: "relative",
-                  left: "50px",
+                  left: "10px",
                   bottom: "20px",
                   top: "5px",
                   background: "#f4f7f6",
@@ -527,10 +429,8 @@ function HomePage() {
                     selectShape(null);
                   }
                 }}
-               
               >
                 <Layer ref={layerEl}>
-               
                   {images.map((image) => {
                     return <URLImage image={image} />;
                   })}
@@ -572,47 +472,46 @@ function HomePage() {
                   })}
                 </Layer>
               </Stage>
-            
+            </div>
+          ) : null}
 
-            <div className="child-preview" id="preview">
-              <img id="preview-image" src={dispImg} width="1000"></img>
           
-              <div className="tweet-text" id="textbox-chars">
-                {show ? (
-                  <textarea
-                    value={tweet}
-                    onChange={(e) => setTweet(e.target.value)}
-                  />
-                ) : null}
-                <link rel="canonical" href="/web/tweet-button"></link>
-                {show ? (
-                  <a
-                    class="twitter-share-button"
-                    href={`https://twitter.com/intent/tweet?text=${tweet}`}
-                    data-size="large"
-                  >
-                    Tweet
-                  </a>
-                ) : null}
-                {show ? (
-                  <button
-                    type="button"
-                    id="reset-btn"
-                    class="btn btn-primary"
-                    onClick={erase}
-                  >
-                    Reset
-                  </button>
-                ) : null}
-              </div>
+            {show ? (
+              <button
+                type="button"
+                id="reset-btn"
+                class="btn btn-primary"
+                onClick={erase}
+              >
+                Reset
+              </button>
+            ) : null}
+            <div className="child-preview" id="preview">
+            <img id="preview-image" src={dispImg} width="1000"></img>
 
-              
-                </div>
-            </div> 
+            <div className="tweet-text" id="textbox-chars">
+              {show ? (
+                <textarea
+                  className ="tweet-text-area"
+                  value={tweet}
+                  onChange={(e) => setTweet(e.target.value)}
+                />
+              ) : null}
+              <link rel="canonical" href="/web/tweet-button"></link>
+              {show ? (
+                <a
+                  class="twitter-share-button"
+                  href={`https://twitter.com/intent/tweet?text=${tweet}`}
+                  data-size="large"
+                >
+                  Tweet
+                </a>
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
-
+    </div>
   );
 }
 export default HomePage;

@@ -57,6 +57,34 @@ button{
   display: inline-block;
 } */
 
+.tweet-text-area{
+  height:300px;
+  width:200px;
+  margin:0px;
+  padding:15px;
+}
+
+#preview{
+  display: flex;
+}
+
+#preview-image{
+  flex:1;
+
+}
+
+.textzone::-webkit-scrollbar {
+  display: none;
+}
+#myInput {
+  width:1200px;
+  margin-left: 100px;
+}
+
+#logo {
+  margin-left: 100px;
+}
+
 #dropzone-area{
   display:grid;
   grid-auto-flow: column;
@@ -91,6 +119,7 @@ button{
 
 .tweet-text{
   margin-left:100px;
+  flex:1;
 }
 
 #tweet-text-id{
@@ -115,7 +144,8 @@ button{
 }
 
 .child-preview{
-display: inline-block;
+display: block;
+float:left; 
 }
 
 .twitter-share-button{
