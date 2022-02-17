@@ -210,7 +210,7 @@ function HomePage() {
     link.href = dataURL;
 
     let y;
-    // display(); // saves to db
+    display(); // saves to db
     setDispImg(link.href);
 
     setShow(true);
