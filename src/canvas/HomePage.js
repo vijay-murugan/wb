@@ -10,6 +10,7 @@ import { Image as KonvaImage, Stage, Layer, Image, Rect } from "react-konva";
 import Rectangle from "./Rectangle";
 import Circle from "./Circle";
 import { addLine } from "./line";
+
 import { addTextNode } from "./textNode";
 import useImage from "use-image";
 import { v1 as uuidv1 } from "uuid";
@@ -52,10 +53,13 @@ function HomePage() {
   const [dispImg, setDispImg] = React.useState([]);
 
   const [tweet, setTweet] = React.useState("");
-
+  const [prevLink, setPrevLink] = React.useState("");
   const [isToggled, setIsToggled] = React.useState(false);
   const [show, setShow] = React.useState(false);
-  const [canvasShow, setCanvasShow] = React.useState(true);
+  const [canvasShow, setCanvasShow] = React.useState(false);
+  const [btnShow, setBtnShow] = React.useState(true);
+  const [btnHide, setBtnHide] = React.useState(false);
+  const [prevHide, setPrevHide] = React.useState(false);
   const [val, setVal] = React.useState([""]);
   const [val2, setVal2] = React.useState([""]);
 
@@ -97,6 +101,10 @@ function HomePage() {
     // console.log("conso",val)
     return val;
   };
+
+  function refreshPage() {
+    window.location.reload(false);
+  }
 
   async function getBase64(file) {
     let result_base64 = await new Promise((resolve) => {
@@ -168,13 +176,32 @@ function HomePage() {
       .then(function (res) {
         return res.json();
       })
-      .then((res) => console.log(res));
+      .then((res) => {
+        setPrevLink(res);
+        console.log(res);
+      });
   };
   var x = 1;
   const erase = () => {
     setDispImg(null);
     setShow(false);
     setCanvasShow(true);
+    setPrevHide(true);
+    setBtnHide(true);
+  };
+
+  const showCanvas = () => {
+    setCanvasShow(true);
+    setBtnHide(true);
+    setBtnShow(false);
+    setPrevHide(true);
+  };
+
+  const hideCanvas = () => {
+    setCanvasShow(false);
+    setBtnHide(false);
+    setBtnShow(true);
+    setPrevHide(false);
   };
 
   const preview = () => {
@@ -183,11 +210,13 @@ function HomePage() {
     link.href = dataURL;
 
     let y;
-
+    // display(); // saves to db
     setDispImg(link.href);
 
     setShow(true);
     setCanvasShow(false);
+    setPrevHide(false);
+    setBtnHide(false);
   };
   //end
   const download = () => {
@@ -197,8 +226,9 @@ function HomePage() {
     link.download = "react-generator";
     link.href = dataURL;
     document.body.appendChild(link);
-    link.click();
+    // link.click();
     document.body.removeChild(link);
+    console.log(link.href);
   };
 
   const addBG = () => {
@@ -261,6 +291,7 @@ function HomePage() {
     const shs = shapes.concat([id]);
     setShapes(shs);
   };
+
   const forceUpdate = React.useCallback(() => updateState({}), []);
   const fileChange = (ev) => {
     let file = ev.target.files[0];
@@ -307,38 +338,78 @@ function HomePage() {
   return (
     <div className="home-page">
       {/* For the icon components  */}
+
       <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       />
+      <div id="yt-video">
+        <center>
+          <iframe
+            src="https://www.youtube.com/embed/E7wJTI-1dvQ"
+            frameBorder="2"
+            margin-top-height="50"
+            allow="autoplay; encrypted-media"
+            allowFullScreen
+            title="video"
+            width="600"
+            height="300"
+          />
+        </center>
+      </div>
+      <center>
+        <div id="input-area">
+          <textarea
+            autoComplete="off"
+            placeholder="Search for the required logo"
+            id="myInput"
+            name="name"
+            className="textzone"
+            onChange={(event) => handleChange(event.target.value)}
+          />
 
-      <textarea
-        autoComplete="off"
-        placeholder="Search for the required logo"
-        id="myInput"
-        name="name"
-        className="textzone"
-        cols="20"
-        onChange={(event) => handleChange(event.target.value)}
-      />
-
+          {btnShow ? (
+            <Button
+              color="primary"
+              id="canvas-show-btn"
+              onClick={showCanvas}
+              title="Show Canvas"
+            >
+              Show Canvas
+            </Button>
+          ) : null}
+        </div>
+      </center>
       <div></div>
       {}
-      <img
-        id="logo"
-        src={getBase64Image(name)} //name}
-        draggable="true"
-        onDragStart={(e) => {
-          dragUrl.current = e.target.src;
-        }}
-      />
-      <img
-        src={getBase64Image2(name2)} //name}
-        draggable="true"
-        onDragStart={(e) => {
-          dragUrl.current = e.target.src;
-        }}
-      />
+      <center>
+        <img
+          id="logo"
+          src={getBase64Image(name)} //name}
+          draggable="true"
+          onDragStart={(e) => {
+            dragUrl.current = e.target.src;
+          }}
+        />
+        <img
+          src={getBase64Image2(name2)} //name}
+          draggable="true"
+          onDragStart={(e) => {
+            dragUrl.current = e.target.src;
+          }}
+        />
+      </center>
+
+      {btnHide ? (
+        <Button
+          color="primary"
+          id="canvas-hide-btn"
+          onClick={hideCanvas}
+          title="Close"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </Button>
+      ) : null}
 
       <div></div>
 
@@ -367,14 +438,15 @@ function HomePage() {
             <Button color="primary" onClick={undo} title="Undo">
               <i class="fa-solid fa-delete-left"></i>
             </Button>
-            {/* <Button color="primary" onClick={download} title="download">
-                Export
-              </Button>
-              <Button color="primary" onClick={display}>
+            <Button color="primary" onClick={download} title="download">
+              Export
+            </Button>
+            {/* <Button color="primary" onClick={display}>
                 Save to db
               </Button> */}
-            <Button color="primary" onClick={preview} title="Preview">
-              Preview
+
+            <Button color="primary" onClick={refreshPage} title="Clear">
+              Clear
             </Button>
             {isToggled}
           </div>
@@ -412,14 +484,14 @@ function HomePage() {
               <Stage
                 style={{
                   border: "1px solid grey",
-                  width: "1200px",
+                  width: "1250px",
                   position: "relative",
                   left: "10px",
                   bottom: "20px",
                   top: "5px",
                   background: "#f4f7f6",
                 }}
-                width={window.innerWidth * 0.87}
+                width={window.innerWidth * 0.84}
                 height={window.innerHeight - 150}
                 ref={stageEl} //,stageRef}
                 onMouseDown={(e) => {
@@ -475,34 +547,45 @@ function HomePage() {
             </div>
           ) : null}
 
-          
-            {show ? (
-              <button
-                type="button"
-                id="reset-btn"
-                class="btn btn-primary"
-                onClick={erase}
-              >
-                Reset
-              </button>
-            ) : null}
-            <div className="child-preview" id="preview">
+          {prevHide ? (
+            <Button
+              color="primary"
+              onClick={preview}
+              title="Preview"
+              id="preview-btn"
+            >
+             <i class="fas fa-arrow-right"></i>
+            </Button>
+          ) : null}
+
+          {show ? (
+            <button
+              type="button"
+              id="reset-btn"
+              class="btn btn-primary"
+              onClick={erase}
+            >
+              Reset
+            </button>
+          ) : null}
+          <div className="child-preview" id="preview">
             <img id="preview-image" src={dispImg} width="1000"></img>
 
             <div className="tweet-text" id="textbox-chars">
               {show ? (
                 <textarea
-                  className ="tweet-text-area"
+                  className="tweet-text-area"
                   value={tweet}
                   onChange={(e) => setTweet(e.target.value)}
                 />
               ) : null}
-              <link rel="canonical" href="/web/tweet-button"></link>
+              {/* <link rel="canonical" href="/web/tweet-button"></link> */}
               {show ? (
                 <a
                   class="twitter-share-button"
-                  href={`https://twitter.com/intent/tweet?text=${tweet}`}
+                  href={`https://twitter.com/intent/tweet?text=${tweet}&url=http://localhost:3000/images/${prevLink}`}
                   data-size="large"
+                  target="_blank"
                 >
                   Tweet
                 </a>

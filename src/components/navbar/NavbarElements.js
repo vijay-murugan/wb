@@ -16,7 +16,9 @@ export const Nav = styled.nav`
 `;
 
 export const NavLink = styled(Link)`
-  color: #fff ;
+background: #f87a47;
+color: white;
+border-radius: 2px;
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -25,12 +27,19 @@ export const NavLink = styled(Link)`
   cursor: pointer;
   &.active {
     color: #f87a47;
+    background: white;
+    &:hover {
+      transition: all 0.2s ease-in-out;
+      background: #f87a47;
+color: white;
+    }
   }
   &:hover {
     transition: all 0.2s ease-in-out;
-    background: #f87a47;
-    color: white;
+    background: white;
+    color: #f87a47;
   }
+ 
 `;
 
 export const Bars = styled(FaBars)`

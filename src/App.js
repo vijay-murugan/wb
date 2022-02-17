@@ -2,6 +2,7 @@ import Login from "./components/login";
 import HomePage from "./canvas/HomePage";
 import Image from "./images/image";
 import Test from "./canvas/Test"
+import Images from "./components/images"
 import "./App.css";
 import Navbar from './components/navbar';
 import { Container } from "react-bootstrap";
@@ -18,12 +19,12 @@ function App() {
   return (
     <BrowserRouter>
     
-    <Navbar />
+    {/* <Navbar /> */}
       <Routes>
         <Route path="/" element={<HomePage />}></Route>
-        <Route path="/test" element={<Test/>}></Route>
         <Route path="/home" element={<Login />}></Route>
         <Route path="/image" element={<Image />}></Route>
+        <Route path = "/images/:id" element = {<Images/>}/>
       </Routes>
     </BrowserRouter>
   );

@@ -4,13 +4,20 @@ textarea {
     padding: 12px 20px;
     margin: 20px 20px 10px 60px;
     box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background-color: #f8f8f8;
+    border: 2px solid rgb(206, 196, 196);
+    border-radius: 8px;
+    background-color: #ffffff;
     font-size: 16px;
     resize: none;
-    box-shadow: 10px 10px 5px #aaaaaa;
+
   }
+
+textarea:hover{
+  border: 2px solid #f7ddd4;
+  box-shadow: 3px 3px 12px 3px #cfcfd6;
+}
+
+
 
 img{
   margin: 0px 20px 10px 60px;
@@ -18,13 +25,15 @@ img{
 
 button{
   margin: 0px 0px 0px 0px;
-  flex:1
+  flex:1;
+  
 }
 
 .btn-primary {
   color: white;
   background-color: #f87a47;
-  border-color: #ff4800
+  border-color: #ff4800;
+  border-radius: 3px;
   
 }
 
@@ -39,23 +48,24 @@ button{
     background-color:grey !important; /* add here any color */
 }
 
+.btn-primary:focus{
+  background-color: #EB984E;
+  border-color: #EB984E;
+  box-shadow: 3px 2px 6px 1px rgb(233, 171, 100);
+}
+
 .btn-primary:disabled {
   color: #fff;
   background-color: #EB984E;
   border-color: #EB984E;
-}
-/* 
-.flex-parent {
-  display: inline-block;
+ 
 }
 
-.canvas{
-  display: inline-block;
-}
 
-.preview{
-  display: inline-block;
-} */
+.btn-primary:visited{
+
+  box-shadow: 3px 2px 22px 1px rgb(255, 209, 4);
+}
 
 .tweet-text-area{
   height:300px;
@@ -73,16 +83,18 @@ button{
 
 }
 
+
+
 .textzone::-webkit-scrollbar {
   display: none;
 }
 #myInput {
-  width:1200px;
-  margin-left: 100px;
+  width: 750px;
+  display: inline-block;
 }
 
 #logo {
-  margin-left: 100px;
+  margin-top: 10px;
 }
 
 #dropzone-area{
@@ -139,7 +151,7 @@ button{
 }
 
 #child-canvas{
-  margin-left:0px;
+  margin-left:25px;
   display:inline-flex;
 }
 
@@ -185,3 +197,30 @@ float:left;
   border-color: #303636
 }
 
+
+#yt-video {
+  margin-top: 50px;
+}
+
+#canvas-show-btn{
+  float:right;
+  margin-top: 25px;
+  /* display: inline-flex; */
+}
+
+#input-area{
+  display: table;
+  clear: both;
+}
+
+#canvas-hide-btn{
+ margin-left:1375px;
+  border-radius: 40px;
+
+}
+
+#preview-btn{
+  margin-left:1300px;
+  display:inline-flex;
+  border-radius: 40px;
+}
