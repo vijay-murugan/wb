@@ -583,7 +583,7 @@ function HomePage() {
               {show ? (
                 <a
                   class="twitter-share-button"
-                  href={`https://twitter.com/intent/tweet?text=${tweet}&url=http://localhost:3000/images/${prevLink}`}
+                  href={`https://twitter.com/intent/tweet?text=${tweet}&url=https://frosty-lumiere-178f71.netlify.app/images/${prevLink}`}
                   data-size="large"
                   target="_blank"
                 >
