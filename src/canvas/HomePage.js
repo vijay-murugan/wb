@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 //import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { Button } from "reactstrap";
 
@@ -15,6 +15,8 @@ import { addTextNode } from "./textNode";
 import useImage from "use-image";
 import { v1 as uuidv1 } from "uuid";
 import html2canvas from "html2canvas";
+
+import axios from "axios"
 const imageToBase64 = require('image-to-base64');
 
 
@@ -52,7 +54,7 @@ function HomePage() {
   let y;
   const [imageList, setImageList] = React.useState([]);
   const [dispImg, setDispImg] = React.useState([]);
-
+  const [dispLogo, setDispLogo] = React.useState([]);
   const [tweet, setTweet] = React.useState("");
   const [prevLink, setPrevLink] = React.useState("");
   const [isToggled, setIsToggled] = React.useState(false);
@@ -63,6 +65,7 @@ function HomePage() {
   const [prevHide, setPrevHide] = React.useState(false);
   const [val, setVal] = React.useState([""]);
   const [val2, setVal2] = React.useState([""]);
+  const [data,setData]=useState([]);
 
   const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
@@ -143,20 +146,46 @@ function HomePage() {
     }
   }
 
-  // const handleChange = (value) => {
-  //   setName(
-  //     "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www." +
-  //       // "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
-  //       value +
-  //       ".com&size=128"
-  //     // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
-  //   );
-  //   setName2(
-  //     "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=" +
-  //       value +
-  //       "&size=128"
-  //   );
-  // };
+  const saveImg = (dataURL) => {
+    const payload = {
+      img: dataURL,
+    };
+    fetch("http://localhost:5000/save", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(function (res) {
+        return res.json();
+      })
+      .then((res) => {
+        setPrevLink(res);
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err)
+      });
+  }
+
+  const handleChange = (value) => {
+    setName(
+      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www." +
+        // "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
+        value +
+        ".com&size=128"
+      // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
+    );
+    // setName2(
+    //   "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=" +
+    //     value +
+    //     "&size=128"
+    // );
+    // saveImg(name)
+    // console.log("image id =",prevLink)
+    // imgHandle(prevLink)
+  };
 
   const display = () => {
     const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
@@ -336,37 +365,60 @@ function HomePage() {
       forceUpdate();
     }
   });
+
+
+
+  const imgHandle = (id) => {
+    // let {id} = useParams();
+   console.log("Id =",id)
+    
+    const dis = () => {
+  
+    axios.get(`http://localhost:5000/images/${id}`).then((response)=> {         
+    setData(response)
+  });
+    }
+    dis()
+    console.log("Data = ",data)
+  }
+
   var imgFromURL=document.createElement("img"); 
   //imgFromURL.crossOrigin="anonymous"
-  window.setInterval(() => {
-    var url=document.getElementById('myInput').value;  
-	  if (url) {
+  // window.setInterval(() => {
+  //   var url=document.getElementById('myInput').value;  
+	//   if (url) {
 	
-	    var srcURL ="https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www."+ url +".com&size=128";
+	//     var srcURL ="https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www."+ url +".com&size=128";
       
-      // if (url.indexOf('.')===-1) { //if no tld, then add .com
-      //   srcURL+='.com&size=128';
-      // }
+  //     // if (url.indexOf('.')===-1) { //if no tld, then add .com
+  //     //   srcURL+='.com&size=128';
+  //     // }
       
 	    
-	    imgFromURL.src=srcURL;
-    //   imageToBase64(imgFromURL.src) // Path to the image
-    // .then(
-    //     (response) => {
-    //         console.log(response); // "cGF0aC90by9maWxlLmpwZw=="
-    //     }
-    // )
-    // .catch(
-    //     (error) => {
-    //         console.log(error); // Logs an error if there was one
-    //     }
-    // )
-      // console.log("imhg url =",imgFromURL.src)
-     document.getElementById("logo").src =imgFromURL.src ;
-    // encodeImage(imgFromURL.src);
-    
-    }
-  },2000);
+	//     imgFromURL.src=srcURL;
+  //   //   imageToBase64(imgFromURL.src) // Path to the image
+  //   // .then(
+  //   //     (response) => {
+  //   //         console.log(response); // "cGF0aC90by9maWxlLmpwZw=="
+  //   //     }
+  //   // )
+  //   // .catch(
+  //   //     (error) => {
+  //   //         console.log(error); // Logs an error if there was one
+  //   //     }
+  //   // )
+  //     // console.log("imhg url =",imgFromURL.src)
+  //    var imgid = saveImg(imgFromURL.src)
+  //    console.log("image id =",prevLink)
+  //    imgHandle(prevLink)
+  //   //  document.getElementById("logo").src ="http://localhost:3000/images/6210893e5d0d95247d43f9d3"; //"http://localhost:3000/images/"+ imgFromURL.src ;
+  //   // encodeImage(imgFromURL.src);
+  //   // var link = document.createElement("a");
+   
+  //   // setDispLogo(link.href);
+  //   // console.log(link.href)
+  //   }
+  // },2000);
   function encodeImage(src, callback) {
     var canvas = document.createElement('canvas'),
         ctx = canvas.getContext('2d'),
@@ -411,9 +463,9 @@ function HomePage() {
             name="name"
             className="textzone"
             
-           // onChange={(event) => handleChange(event.target.value)}
+           onChange={(event) => handleChange(event.target.value)}
           />
-
+<img src = {data.data}/>  
           {btnShow ? (
             <Button
               color="primary"
@@ -432,8 +484,8 @@ function HomePage() {
         <img
         
           id="logo"
-          //src={getBase64Image(name)} //name}
-         
+          src={getBase64Image(name)} //name}
+        // src = 'http://localhost:3000/images/6210893e5d0d95247d43f9d3'//{getBase64Image('http://localhost:3000/images/6210893e5d0d95247d43f9d3')}
           draggable="true"
           onDragStart={(e) => {
             dragUrl.current = e.target.src;
