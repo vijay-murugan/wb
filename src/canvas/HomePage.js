@@ -433,7 +433,7 @@ function HomePage() {
         
           id="logo"
           //src={getBase64Image(name)} //name}
-         crossOrigin="Anonymous"
+         
           draggable="true"
           onDragStart={(e) => {
             dragUrl.current = e.target.src;
