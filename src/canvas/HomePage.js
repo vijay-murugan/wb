@@ -102,7 +102,7 @@ function HomePage() {
       setVal(dataURL);
     };
     varimg.src = url;
-    // console.log("conso",val)
+    console.log("base64 = ",val)
     return val;
   };
 
