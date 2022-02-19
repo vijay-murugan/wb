@@ -15,8 +15,9 @@ import { addTextNode } from "./textNode";
 import useImage from "use-image";
 import { v1 as uuidv1 } from "uuid";
 import html2canvas from "html2canvas";
+const imageToBase64 = require('image-to-base64');
 
-const imageToBase64 = require("image-to-base64");
+
 
 uuidv1();
 //https://www.google.com/s2/favicons?sz=128&domain_url=yahoo.com
@@ -142,20 +143,20 @@ function HomePage() {
     }
   }
 
-  const handleChange = (value) => {
-    setName(
-      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www." +
-        // "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
-        value +
-        ".com&size=128"
-      // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
-    );
-    setName2(
-      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=" +
-        value +
-        "&size=128"
-    );
-  };
+  // const handleChange = (value) => {
+  //   setName(
+  //     "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www." +
+  //       // "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
+  //       value +
+  //       ".com&size=128"
+  //     // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
+  //   );
+  //   setName2(
+  //     "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=" +
+  //       value +
+  //       "&size=128"
+  //   );
+  // };
 
   const display = () => {
     const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
@@ -206,10 +207,10 @@ function HomePage() {
 
   const preview = () => {
     const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
+    console.log("dataurl=",dataURL);
     var link = document.createElement("a");
     link.href = dataURL;
 
-    let y;
     display(); // saves to db
     setDispImg(link.href);
 
@@ -335,6 +336,50 @@ function HomePage() {
       forceUpdate();
     }
   });
+  var imgFromURL=document.createElement("img"); 
+  //imgFromURL.crossOrigin="anonymous"
+  window.setInterval(() => {
+    var url=document.getElementById('myInput').value;  
+	  if (url) {
+	
+	    var srcURL ="https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www."+ url +".com&size=128";
+      
+      // if (url.indexOf('.')===-1) { //if no tld, then add .com
+      //   srcURL+='.com&size=128';
+      // }
+      
+	    
+	    imgFromURL.src=srcURL;
+    //   imageToBase64(imgFromURL.src) // Path to the image
+    // .then(
+    //     (response) => {
+    //         console.log(response); // "cGF0aC90by9maWxlLmpwZw=="
+    //     }
+    // )
+    // .catch(
+    //     (error) => {
+    //         console.log(error); // Logs an error if there was one
+    //     }
+    // )
+      // console.log("imhg url =",imgFromURL.src)
+     document.getElementById("logo").src =imgFromURL.src ;
+    // encodeImage(imgFromURL.src);
+    
+    }
+  },2000);
+  function encodeImage(src, callback) {
+    var canvas = document.createElement('canvas'),
+        ctx = canvas.getContext('2d'),
+        img = document.getElementById("logo");
+    img.onload = function () {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        callback(canvas.toDataURL());
+    }
+    img.src = src;
+}
+
   return (
     <div className="home-page">
       {/* For the icon components  */}
@@ -365,7 +410,8 @@ function HomePage() {
             id="myInput"
             name="name"
             className="textzone"
-            onChange={(event) => handleChange(event.target.value)}
+            
+           // onChange={(event) => handleChange(event.target.value)}
           />
 
           {btnShow ? (
@@ -384,8 +430,10 @@ function HomePage() {
       {}
       <center>
         <img
+        
           id="logo"
-          src={getBase64Image(name)} //name}
+          //src={getBase64Image(name)} //name}
+         
           draggable="true"
           onDragStart={(e) => {
             dragUrl.current = e.target.src;
