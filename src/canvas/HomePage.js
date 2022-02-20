@@ -158,7 +158,7 @@ function HomePage() {
     const payload = {
       img: dataURL,
     };
-    fetch("https://thirsty-heisenberg-00defe.netlify.app/api/tmp", {
+    fetch("https://wba-a.herokuapp.com/api/tmp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -208,7 +208,7 @@ function HomePage() {
     // console.log(JSON.stringify(payload))
 
     //data.append("json", JSON.stringify(payload))
-    fetch("https://thirsty-heisenberg-00defe.netlify.app/save", {
+    fetch("https://wba-a.herokuapp.com/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
