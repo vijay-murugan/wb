@@ -8,7 +8,7 @@ const Images = () => {
   const [data,setData]=useState([]);
   const display = () => {
 
-  axios.get(`http://localhost:5000/images/${id}`).then((response)=> {         
+  axios.get(`https://wba-a.herokuapp.com/images/${id}`).then((response)=> {         
   setData(response)
 });
   }
