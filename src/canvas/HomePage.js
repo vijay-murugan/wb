@@ -89,7 +89,7 @@ function HomePage() {
     varimg2.src = url;
     // console.log("conso",val)
     return val2;
-  };
+  };//hello
   const getBase64Image = (url) => {
     const varimg = document.createElement("img"); //new Image();
     varimg.setAttribute("crossOrigin", "anonymous");
