@@ -195,6 +195,7 @@ function HomePage() {
     // saveImg(name)
     // console.log("image id =",prevLink)
     // imgHandle(prevLink)
+    if (value!=null)
     conveImg(value)
   };
 
@@ -377,7 +378,9 @@ function HomePage() {
     }
   });
 
-
+const handleClick = () => {
+  handleChange(document.getElementById("myInput").value)
+}
 
   return (
     <div className="home-page">
@@ -410,28 +413,17 @@ function HomePage() {
             name="name"
             className="textzone"
             
-           onChange={(event) => handleChange(event.target.value)}
+          //  onChange={(event) => handleChange(event.target.value)}
           />
-<img src = {data.data}/>  
-          {btnShow ? (
-            <Button
-              color="primary"
-              id="canvas-show-btn"
-              onClick={showCanvas}
-              title="Show Canvas"
-            >
-              Show Canvas
-            </Button>
-          ) : null}
+<Button color="primary" id="search-btn" onClick = {handleClick}>Search</Button>
+         
         </div>
       </center>
       <div></div>
       {}
-      {/* <form action="/api/uploadFile" enctype="multipart/form-data" method="POST">
-  <input type="file" class="admin__input" id="myFile" name="myFile" />
-  <input class="admin__submit" type="submit" />
-</form> */}
+      
       <center>
+     
         <img
         
           id="logo"
@@ -444,6 +436,7 @@ function HomePage() {
             dragUrl.current = e.target.src;
           }}
         />
+        
         <img
           src={getBase64Image2(name2)} //name}
           draggable="true"
@@ -451,8 +444,20 @@ function HomePage() {
             dragUrl.current = e.target.src;
           }}
         />
+        
       </center>
-
+      <center>
+ {btnShow ? (
+            <Button
+              color="primary"
+              id="canvas-show-btn"
+              onClick={showCanvas}
+              title="Show Canvas"
+            >
+              Show Canvas
+            </Button>
+          ) : null}
+          </center>
       {btnHide ? (
         <Button
           color="primary"

@@ -203,9 +203,14 @@ float:left;
 }
 
 #canvas-show-btn{
-  float:right;
+ 
   margin-top: 25px;
   /* display: inline-flex; */
+}
+
+#search-btn{
+  margin-top:25px;
+  float:right;
 }
 
 #input-area{
