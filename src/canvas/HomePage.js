@@ -68,6 +68,7 @@ function HomePage() {
   const [data,setData]=useState([]);
   const [link,setLink] = useState([])
   const [tmp, setTmp] = useState("")
+  
   let {id} = useParams();
   const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
@@ -159,6 +160,7 @@ function HomePage() {
       img: dataURL,
     };
     fetch("https://wba-a.herokuapp.com/api/tmp", {
+      // fetch("http://localhost:5000/api/tmp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -169,12 +171,17 @@ function HomePage() {
       return res.json();
     })
     .then((res) => {
-      setTmp(res.key);
+      if(res.key == "Not Found"){
+        console.log("nahi mila")
+        setTmp(null)
+      }
+      else{
+        setTmp(res.key);
       console.log("res = ",res.key);
+      }
+      
     });
-    
-    // dis()
-      // console.log("Data = ",link)
+
   }
 
  
@@ -195,8 +202,11 @@ function HomePage() {
     // saveImg(name)
     // console.log("image id =",prevLink)
     // imgHandle(prevLink)
+    // console.log("change = ",value)
+    
     if (value!=null)
     conveImg(value)
+
   };
 
   const display = () => {
@@ -209,6 +219,7 @@ function HomePage() {
 
     //data.append("json", JSON.stringify(payload))
     fetch("https://wba-a.herokuapp.com/save", {
+      // fetch("http://localhost:5000/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -382,6 +393,11 @@ const handleClick = () => {
   handleChange(document.getElementById("myInput").value)
 }
 
+const loadFn = () => {
+
+showCanvas()
+}
+
   return (
     <div className="home-page">
       {/* For the icon components  */}
@@ -390,7 +406,7 @@ const handleClick = () => {
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       />
-      <div id="yt-video">
+      {/* <div id="yt-video">
         <center>
           <iframe
             src="https://www.youtube.com/embed/E7wJTI-1dvQ"
@@ -403,7 +419,7 @@ const handleClick = () => {
             height="300"
           />
         </center>
-      </div>
+      </div> */}
       <center>
         <div id="input-area">
           <textarea
@@ -413,22 +429,36 @@ const handleClick = () => {
             name="name"
             className="textzone"
             
-          //  onChange={(event) => handleChange(event.target.value)}
+           onChange={(event) => handleChange(event.target.value)}
           />
-<Button color="primary" id="search-btn" onClick = {handleClick}>Search</Button>
+{/* <Button color="primary" id="search-btn" onClick = {handleClick}>Search</Button> */}
          
         </div>
       </center>
       <div></div>
       {}
-      
+      <center>
+ {btnShow ? (
+            <Button
+              color="primary"
+              id="canvas-show-btn"
+              onClick={showCanvas}
+              title="Show Canvas"
+            >
+              Show Canvas
+            </Button>
+          ) : null}
+          </center>
       <center>
      
         <img
-        
+         
           id="logo"
           // src = {name}
           src = {tmp}
+          onLoad = {loadFn}
+          // width = "60px"
+          // height = "60px"
         //  src={getBase64Image(name)} //name}
         // src = 'http://localhost:3000/images/6210893e5d0d95247d43f9d3'//{getBase64Image('http://localhost:3000/images/6210893e5d0d95247d43f9d3')}
           draggable="true"
@@ -446,18 +476,7 @@ const handleClick = () => {
         />
         
       </center>
-      <center>
- {btnShow ? (
-            <Button
-              color="primary"
-              id="canvas-show-btn"
-              onClick={showCanvas}
-              title="Show Canvas"
-            >
-              Show Canvas
-            </Button>
-          ) : null}
-          </center>
+      
       {btnHide ? (
         <Button
           color="primary"
