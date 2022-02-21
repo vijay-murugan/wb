@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 //import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { Button } from "reactstrap";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import Dropzone from "react-dropzone";
 //import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomePage.css";
-import { Image as KonvaImage, Stage, Layer, Image, Rect } from "react-konva";
+import { Image as KonvaImage, Stage, Layer, Image, Rect, Transformer } from "react-konva";
 import Rectangle from "./Rectangle";
 import Circle from "./Circle";
 import { addLine } from "./line";
@@ -16,27 +16,147 @@ import useImage from "use-image";
 import { v1 as uuidv1 } from "uuid";
 import html2canvas from "html2canvas";
 
-import axios from "axios"
-const imageToBase64 = require('image-to-base64');
-
-
+import axios from "axios";
+const imageToBase64 = require("image-to-base64");
 
 uuidv1();
 //https://www.google.com/s2/favicons?sz=128&domain_url=yahoo.com
 //https://www.google.com/s2/favicons?sz=64&domain_url=microsoft.com
 //Image drag drop with URLImage
-const URLImage = ({ image }) => {
+// const URLImage = ({ image }) => {
+//   const [img] = useImage(image.src);
+//   return (
+//     <Image
+//       image={img}
+//       x={image.x}
+//       y={image.y}
+//       offsetX={img ? img.width / 2 : 0}
+//       offsetY={img ? img.height / 2 : 0}
+//     />
+//   );
+// };
+
+let history = [
+  {
+    x: 20,
+    y: 20
+  }
+];
+let historyStep = 0;
+
+const URLImage = ({
+  image,
+  shapeProps,
+  unSelectShape,
+  isSelected,
+  onSelect,
+  onChange,
+  stageScale,
+  onDelete
+}) => {
+  const shapeRef = React.useRef();
+  const trRef = React.useRef();
+  const deleteButton = React.useRef();
   const [img] = useImage(image.src);
+
+  React.useEffect(() => {
+    if (isSelected) {
+      // we need to attach transformer manually
+      trRef.current.nodes([shapeRef.current]);
+      trRef.current.getLayer().batchDraw();
+    }
+  }, [isSelected]);
+
+  const onMouseEnter = (event) => {
+    if (isSelected) {
+      event.target.getStage().container().style.cursor = "move";
+    }
+    if (!isSelected) {
+      event.target.getStage().container().style.cursor = "pointer";
+    }
+  };
+
+  const onMouseLeave = (event) => {
+    event.target.getStage().container().style.cursor = "default";
+  };
+
+  const handleDelete = () => {
+    unSelectShape(null);
+    onDelete(shapeRef.current);
+  };
+
   return (
-    <Image
-      image={img}
-      x={image.x}
-      y={image.y}
-      offsetX={img ? img.width / 2 : 0}
-      offsetY={img ? img.height / 2 : 0}
-    />
+    <React.Fragment>
+      <Image
+        image={img}
+        x={image.x}
+        y={image.y}
+        
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        // I will use offset to set origin to the center of the image
+        offsetX={img ? img.width / 2 : 0}
+        offsetY={img ? img.height / 2 : 0}
+        onClick={onSelect}
+        onTap={onSelect}
+        ref={shapeRef}
+        {...shapeProps}
+        draggable
+        onDragEnd={(e) => {
+          onChange({
+            ...shapeProps,
+            x: e.target.x(),
+            y: e.target.y()
+          });
+        }}
+        onTransformEnd={(e) => {
+          // transformer is changing scale of the node
+          // and NOT its width or height
+          // but in the store we have only width and height
+          // to match the data better we will reset scale on transform end
+          const node = shapeRef.current;
+          const scaleX = node.scaleX();
+          const scaleY = node.scaleY();
+
+          // we will reset it back
+          node.scaleX(1);
+          node.scaleY(1);
+          onChange({
+            ...shapeProps,
+            x: node.x(),
+            y: node.y(),
+            // set minimal value
+            width: Math.max(5, node.width() * scaleX),
+            height: Math.max(node.height() * scaleY)
+          });
+        }}
+      />
+      {isSelected && (
+        
+        <Transformer
+          ref={trRef}
+          boundBoxFunc={(oldBox, newBox) => {
+            // limit resize
+            if (newBox.width < 5 || newBox.height < 5) {
+              return oldBox;
+            }
+            return newBox;
+          }}
+        >
+          <Circle
+            radius={8}
+            fill="red"
+            ref={deleteButton}
+            onClick={handleDelete}
+            x={shapeRef.current.width() * stageScale}
+          ></Circle>
+        </Transformer>
+      )}
+    </React.Fragment>
   );
 };
+
+
 
 function HomePage() {
   const [rectangles, setRectangles] = useState([]);
@@ -50,7 +170,7 @@ function HomePage() {
   const [name2, setName2] = React.useState("");
   const dragUrl = React.useRef();
   const [images, setImages] = React.useState([]);
-  const [exp, setExp] = React.useState([]);
+
   let y;
   const [imageList, setImageList] = React.useState([]);
   const [dispImg, setDispImg] = React.useState([]);
@@ -65,11 +185,43 @@ function HomePage() {
   const [prevHide, setPrevHide] = React.useState(false);
   const [val, setVal] = React.useState([""]);
   const [val2, setVal2] = React.useState([""]);
-  const [data,setData]=useState([]);
-  const [link,setLink] = useState([])
-  const [tmp, setTmp] = useState("")
-  
-  let {id} = useParams();
+  const [data, setData] = useState([]);
+  const [link, setLink] = useState([]);
+  const [tmp, setTmp] = useState("");
+  const [isDrag, setIsDrag] = useState(false);
+  const [xcoor,setXcoor] = useState(50);
+  const [ycoor,setYcoor] = useState(50);
+  const fileUploadEl = React.createRef();
+  const [stageSpec, setStageSpec] = useState({
+    scale: 1,
+    x: 0,
+    y: 0
+  });
+
+  const handleRemove = (index) => {
+    const newList = images.filter((item) => item.index !== index);
+
+    setImages(newList);
+  };
+
+  // const checkDeselect = (e) => {
+  //   // deselect when clicked on empty area
+  //   const clickedOnEmpty = e.target === e.target.getStage();
+  //   if (clickedOnEmpty) {
+  //     selectShape(null);
+  //   }
+  // };
+
+  const unSelectShape = (prop) => {
+    selectShape(prop);
+  };
+
+  const onDeleteImage = (node) => {
+    const newImages = [...images];
+    newImages.splice(node.index, 1);
+    setImages(newImages);
+  };
+  let { id } = useParams();
   const getRandomInt = (max) => {
     return Math.floor(Math.random() * Math.floor(max));
   };
@@ -90,7 +242,7 @@ function HomePage() {
     varimg2.src = url;
     // console.log("conso",val)
     return val2;
-  };//hello
+  }; //hello
   const getBase64Image = (url) => {
     const varimg = document.createElement("img"); //new Image();
     varimg.setAttribute("crossOrigin", "anonymous");
@@ -105,7 +257,7 @@ function HomePage() {
       setVal(dataURL);
     };
     varimg.src = url;
-    console.log("base64 = ",val)
+    console.log("base64 = ", val);
     return val;
   };
 
@@ -149,12 +301,12 @@ function HomePage() {
     }
   }
   // const dis = () => {
-  
-  //   axios.get(`http://localhost:5000/images/${tmp}`).then((response)=> {         
+
+  //   axios.get(`http://localhost:5000/images/${tmp}`).then((response)=> {
   //   // setLink(response)
   //   console.log("response = ",response)
   // });
-    // }
+  // }
   const conveImg = (dataURL) => {
     const payload = {
       img: dataURL,
@@ -168,45 +320,35 @@ function HomePage() {
       body: JSON.stringify(payload),
     })
       .then(function (res) {
-      return res.json();
-    })
-    .then((res) => {
-      if(res.key == "Not Found"){
-        console.log("nahi mila")
-        setTmp(null)
-      }
-      else{
-        setTmp(res.key);
-      console.log("res = ",res.key);
-      }
-      
-    });
-
-  }
-
- 
+        return res.json();
+      })
+      .then((res) => {
+        if (res.key == "Not Found") {
+          console.log("nahi mila");
+          setTmp(null);
+        } else {
+          setTmp(res.key);
+          console.log("res = ", res.key);
+        }
+      });
+  };
 
   const handleChange = (value) => {
-    setName(
-      "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www." +
-        // "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
-        value +
-        ".com&size=128"
-      // "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
-    );
+    // setName(
+    //   "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www." +
+    //     "https://www.google.com/s2/favicons?sz=128&domain_url=http://www." +
+    //     value +
+    //     ".com&size=128"
+    //   "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
+    // );
     // setName2(
     //   "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=" +
     //     value +
     //     "&size=128"
     // );
-    // saveImg(name)
-    // console.log("image id =",prevLink)
-    // imgHandle(prevLink)
-    // console.log("change = ",value)
-    
-    if (value!=null)
-    conveImg(value)
 
+
+    if (value != null) conveImg(value);
   };
 
   const display = () => {
@@ -259,7 +401,7 @@ function HomePage() {
 
   const preview = () => {
     const dataURL = stageEl ? stageEl.current.getStage().toDataURL() : null;
-    console.log("dataurl=",dataURL);
+    console.log("dataurl=", dataURL);
     var link = document.createElement("a");
     link.href = dataURL;
 
@@ -284,6 +426,8 @@ function HomePage() {
     console.log(link.href);
   };
 
+
+  //tried background here
   const addBG = () => {
     const rect = {
       x: getRandomInt(100),
@@ -301,6 +445,8 @@ function HomePage() {
     setShapes(shs);
   };
 
+
+  //adding rectangles
   const addRectangle = () => {
     const rect = {
       x: getRandomInt(100),
@@ -346,14 +492,7 @@ function HomePage() {
   };
 
   const forceUpdate = React.useCallback(() => updateState({}), []);
-  const fileChange = (ev) => {
-    let file = ev.target.files[0];
-    let reader = new FileReader();
-
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-  };
+  
   const undo = () => {
     const lastId = shapes[shapes.length - 1];
     let index = circles.findIndex((c) => c.id === lastId);
@@ -366,11 +505,33 @@ function HomePage() {
       rectangles.splice(index, 1);
       setRectangles(rectangles);
     }
-
+    // index = images.findIndex((i) => i.id === lastId);
+    // console.log('ind-',index)
+    // if(index !== -1) {
+    //   index = images.length-1
+    //   console.log("len -",index)
+    // //  const newImages = [...images];
+    // images.splice(index, 1);
+    // setImages(images);
+    // }
     shapes.pop();
     setShapes(shapes);
     forceUpdate();
   };
+
+  const undoImage = () => {
+    let index = images.length-1
+    console.log('ind-',index)
+    if(index !== -1) {
+      console.log("len -",index)
+    //  const newImages = [...images];
+    images.splice(index, 1);
+    setImages(images);
+    }  
+    // shapes.pop();
+    // setShapes(shapes);
+    forceUpdate();
+  }
 
   document.addEventListener("keydown", (ev) => {
     if (ev.code === "Delete") {
@@ -384,19 +545,25 @@ function HomePage() {
         rectangles.splice(index, 1);
         setRectangles(rectangles);
       }
-
+      index = images.findIndex((i) => i.id === selectedId);
+      if (index !== -1) {
+        images.splice(index, 1);
+        setImages(images);
+      }
+     
+     
       forceUpdate();
     }
   });
 
-const handleClick = () => {
-  handleChange(document.getElementById("myInput").value)
-}
+  const handleClick = () => {
+    handleChange(document.getElementById("myInput").value);
+  };
 
-const loadFn = () => {
-
-showCanvas()
-}
+  const loadFn = () => {
+    showCanvas();
+    
+  };
 
   return (
     <div className="home-page">
@@ -428,45 +595,70 @@ showCanvas()
             id="myInput"
             name="name"
             className="textzone"
-            
-           onChange={(event) => handleChange(event.target.value)}
+            onChange={(event) => handleChange(event.target.value)}
           />
-{/* <Button color="primary" id="search-btn" onClick = {handleClick}>Search</Button> */}
-         
+          {/* <Button color="primary" id="search-btn" onClick = {handleClick}>Search</Button> */}
         </div>
       </center>
       <div></div>
       {}
       <center>
- {btnShow ? (
-            <Button
-              color="primary"
-              id="canvas-show-btn"
-              onClick={showCanvas}
-              title="Show Canvas"
-            >
-              Show Canvas
-            </Button>
-          ) : null}
-          </center>
+        {btnShow ? (
+          <Button
+            color="primary"
+            id="canvas-show-btn"
+            onClick={showCanvas}
+            title="Show Canvas"
+          >
+            Show Canvas
+          </Button>
+        ) : null}
+      </center>
       <center>
-     
-        <img
-         
+        {/* <img
           id="logo"
           // src = {name}
-          src = {tmp}
-          onLoad = {loadFn}
+          src={tmp}
+          onLoad={loadFn}
           // width = "60px"
           // height = "60px"
-        //  src={getBase64Image(name)} //name}
-        // src = 'http://localhost:3000/images/6210893e5d0d95247d43f9d3'//{getBase64Image('http://localhost:3000/images/6210893e5d0d95247d43f9d3')}
+          //  src={getBase64Image(name)} //name}
+          // src = 'http://localhost:3000/images/6210893e5d0d95247d43f9d3'//{getBase64Image('http://localhost:3000/images/6210893e5d0d95247d43f9d3')}
           draggable="true"
           onDragStart={(e) => {
             dragUrl.current = e.target.src;
+           
           }}
-        />
-        
+         
+        /> */}
+                <img
+              
+                  key="img3"
+                  id = "logo"
+                  src={tmp}
+                  onLoad={loadFn}
+                  draggable="true"
+                  onDragStart={(e) => {
+                    dragUrl.current = e.target.src;
+                  }}
+                />
+                 {/* <div
+            onDrop={(e) => {
+              e.preventDefault();
+              // register event position
+              stageEl.current.setPointersPositions(e);
+              // add image
+              setImages(
+                images.concat([
+                  {
+                    ...stageEl.current.getRelativePointerPosition(),
+                    src: dragUrl.current
+                  }
+                ])
+              );
+            }}
+            onDragOver={(e) => e.preventDefault()}
+          ></div> */}
         <img
           src={getBase64Image2(name2)} //name}
           draggable="true"
@@ -474,9 +666,8 @@ showCanvas()
             dragUrl.current = e.target.src;
           }}
         />
-        
       </center>
-      
+
       {btnHide ? (
         <Button
           color="primary"
@@ -512,11 +703,14 @@ showCanvas()
               <i class="fa-solid fa-font"></i>
             </Button>
 
-            <Button color="primary" onClick={undo} title="Undo">
+            <Button color="primary" onClick={undo} title="Undo Shape">
               <i class="fa-solid fa-delete-left"></i>
             </Button>
             <Button color="primary" onClick={download} title="download">
               Export
+            </Button>
+            <Button color="primary" onClick={undoImage} title="Undo Image">
+            <i class="fa fa-undo" aria-hidden="true"></i>
             </Button>
             {/* <Button color="primary" onClick={display}>
                 Save to db
@@ -525,6 +719,7 @@ showCanvas()
             <Button color="primary" onClick={refreshPage} title="Clear">
               Clear
             </Button>
+           
             {isToggled}
           </div>
         ) : null}
@@ -545,19 +740,39 @@ showCanvas()
             // register event position
             stageEl.current.setPointersPositions(e);
             // add image
+            
             setImages(
               images.concat([
                 {
-                  ...stageEl.current.getPointerPosition(),
+                  ...stageEl.current.getRelativePointerPosition(),
                   src: dragUrl.current,
                 },
-              ])
+              ]
+              )
             );
+            
           }}
           onDragOver={(e) => e.preventDefault()}
         >
           {canvasShow ? (
             <div id="child-canvas">
+                 <div
+            onDrop={(e) => {
+              e.preventDefault();
+              // register event position
+              stageEl.current.setPointersPositions(e);
+              // add image
+              setImages(
+                images.concat([
+                  {
+                    ...stageEl.current.getRelativePointerPosition(),
+                    src: dragUrl.current
+                  }
+                ])
+              );
+            }}
+            onDragOver={(e) => e.preventDefault()}
+          ></div>
               <Stage
                 style={{
                   border: "1px solid grey",
@@ -568,7 +783,7 @@ showCanvas()
                   top: "5px",
                   background: "#f4f7f6",
                 }}
-                width={window.innerWidth * 0.84}
+                width={window.innerWidth * 0.775}
                 height={window.innerHeight - 150}
                 ref={stageEl} //,stageRef}
                 onMouseDown={(e) => {
@@ -578,13 +793,37 @@ showCanvas()
                     selectShape(null);
                   }
                 }}
+                
               >
                 <Layer ref={layerEl}>
-                  {images.map((image) => {
+                  
+                  {/* {images.map((image) => {
                     return <URLImage image={image} />;
-                  })}
-
-                  {rectangles.map((rect, i) => {
+                  })} */}
+   {images.map((image, index) => {
+                  return (
+                    <URLImage
+                      image={image}
+                      key={index}
+                      shapeProps={image}
+                      stageScale={stageSpec.scale}
+                      isSelected={image === selectedId}
+                      unSelectShape={unSelectShape}
+                      onClick={handleRemove}
+                      onSelect={() => {
+                        selectShape(image);
+                      }}
+                      onChange={(newAttrs) => {
+                        const rects = images.slice();
+                        rects[index] = newAttrs;
+                        setImages(rects);
+                      }}
+                      onDelete={onDeleteImage}
+                      
+                    />
+                  );
+                })}
+                    {rectangles.map((rect, i) => {
                     return (
                       <Rectangle
                         key={i}
@@ -619,6 +858,22 @@ showCanvas()
                       />
                     );
                   })}
+                  {images.map((image, i) => {
+            return (
+              <Image
+                key={i}
+                imageUrl={image.content}
+                isSelected={image.id === selectedId}
+                onSelect={() => {
+                  selectShape(image.id);
+                }}
+                onChange={newAttrs => {
+                  const imgs = images.slice();
+                  imgs[i] = newAttrs;
+                }}
+              />
+            );
+          })}
                 </Layer>
               </Stage>
             </div>
@@ -631,7 +886,7 @@ showCanvas()
               title="Preview"
               id="preview-btn"
             >
-             <i class="fas fa-arrow-right"></i>
+              <i class="fas fa-arrow-right"></i>
             </Button>
           ) : null}
 
