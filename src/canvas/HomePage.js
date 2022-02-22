@@ -6,7 +6,14 @@ import Dropzone from "react-dropzone";
 //import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomePage.css";
-import { Image as KonvaImage, Stage, Layer, Image, Rect, Transformer } from "react-konva";
+import {
+  Image as KonvaImage,
+  Stage,
+  Layer,
+  Image,
+  Rect,
+  Transformer,
+} from "react-konva";
 import Rectangle from "./Rectangle";
 import Circle from "./Circle";
 import { addLine } from "./line";
@@ -38,8 +45,8 @@ uuidv1();
 let history = [
   {
     x: 20,
-    y: 20
-  }
+    y: 20,
+  },
 ];
 let historyStep = 0;
 
@@ -51,7 +58,7 @@ const URLImage = ({
   onSelect,
   onChange,
   stageScale,
-  onDelete
+  onDelete,
 }) => {
   const shapeRef = React.useRef();
   const trRef = React.useRef();
@@ -90,7 +97,6 @@ const URLImage = ({
         image={img}
         x={image.x}
         y={image.y}
-        
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         // I will use offset to set origin to the center of the image
@@ -105,7 +111,7 @@ const URLImage = ({
           onChange({
             ...shapeProps,
             x: e.target.x(),
-            y: e.target.y()
+            y: e.target.y(),
           });
         }}
         onTransformEnd={(e) => {
@@ -126,12 +132,11 @@ const URLImage = ({
             y: node.y(),
             // set minimal value
             width: Math.max(5, node.width() * scaleX),
-            height: Math.max(node.height() * scaleY)
+            height: Math.max(node.height() * scaleY),
           });
         }}
       />
       {isSelected && (
-        
         <Transformer
           ref={trRef}
           boundBoxFunc={(oldBox, newBox) => {
@@ -154,8 +159,6 @@ const URLImage = ({
     </React.Fragment>
   );
 };
-
-
 
 function HomePage() {
   const [rectangles, setRectangles] = useState([]);
@@ -190,7 +193,7 @@ function HomePage() {
   const [stageSpec, setStageSpec] = useState({
     scale: 1,
     x: 0,
-    y: 0
+    y: 0,
   });
 
   const handleRemove = (index) => {
@@ -322,13 +325,10 @@ function HomePage() {
           // console.log("nahi mila");
           // setNotfound("Logo not found")
           setTmp(null);
-        }
-        else if(res.key === "Search")
-        {
+        } else if (res.key === "Search") {
           // setNotfound("Search for imager")
           setTmp(null);
-        } 
-        else {
+        } else {
           setTmp(res.key);
           console.log("res = ", res.key);
         }
@@ -348,7 +348,6 @@ function HomePage() {
     //     value +
     //     "&size=128"
     // );
-
 
     if (value != null) conveImg(value);
   };
@@ -428,7 +427,6 @@ function HomePage() {
     console.log(link.href);
   };
 
-
   //tried background here
   const addBG = () => {
     const rect = {
@@ -446,7 +444,6 @@ function HomePage() {
     const shs = shapes.concat([`rect${rectangles.length + 1}`]);
     setShapes(shs);
   };
-
 
   //adding rectangles
   const addRectangle = () => {
@@ -482,9 +479,7 @@ function HomePage() {
     setShapes(shs);
   };
   const drawLine = () => {
-    if(draw)
-    addLine(stageEl.current.getStage(), layerEl.current, "brush");
-
+    if (draw) addLine(stageEl.current.getStage(), layerEl.current, "brush");
   };
   const eraseLine = () => {
     addLine(stageEl.current.getStage(), layerEl.current, "erase");
@@ -502,7 +497,7 @@ function HomePage() {
   };
 
   const forceUpdate = React.useCallback(() => updateState({}), []);
-  
+
   const undo = () => {
     const lastId = shapes[shapes.length - 1];
     let index = circles.findIndex((c) => c.id === lastId);
@@ -530,18 +525,18 @@ function HomePage() {
   };
 
   const undoImage = () => {
-    let index = images.length-1
-    console.log('ind-',index)
-    if(index !== -1) {
-      console.log("len -",index)
-    //  const newImages = [...images];
-    images.splice(index, 1);
-    setImages(images);
-    }  
+    let index = images.length - 1;
+    console.log("ind-", index);
+    if (index !== -1) {
+      console.log("len -", index);
+      //  const newImages = [...images];
+      images.splice(index, 1);
+      setImages(images);
+    }
     // shapes.pop();
     // setShapes(shapes);
     forceUpdate();
-  }
+  };
 
   document.addEventListener("keydown", (ev) => {
     if (ev.code === "Delete") {
@@ -560,8 +555,7 @@ function HomePage() {
         images.splice(index, 1);
         setImages(images);
       }
-     
-     
+
       forceUpdate();
     }
   });
@@ -572,7 +566,6 @@ function HomePage() {
 
   const loadFn = () => {
     showCanvas();
-    
   };
 
   return (
@@ -641,21 +634,21 @@ function HomePage() {
           }}
          
         /> */}
-                <img
-              // alt = {notfound}
-              // height="50rem"
-              //     width="50rem"
-                  key="img3"
-                  id = "logo"
-                  src={tmp}
-                  onLoad={loadFn}
-                  draggable="true"
-                  onDragStart={(e) => {
-                    dragUrl.current = e.target.src;
-                  }}
-                />
-              
-                 {/* <div
+        <img
+          // alt = {notfound}
+          // height="50rem"
+          //     width="50rem"
+          key="img3"
+          id="logo"
+          src={tmp}
+          onLoad={loadFn}
+          draggable="true"
+          onDragStart={(e) => {
+            dragUrl.current = e.target.src;
+          }}
+        />
+
+        {/* <div
             onDrop={(e) => {
               e.preventDefault();
               // register event position
@@ -723,10 +716,10 @@ function HomePage() {
               Export
             </Button> */}
             <Button color="primary" onClick={undoImage} title="Undo Image">
-            <i class="fa fa-undo" aria-hidden="true"></i>
+              <i class="fa fa-undo" aria-hidden="true"></i>
             </Button>
             <Button color="primary" onClick={doNothing} title="Pointer">
-            <i class="fas fa-mouse-pointer"></i>
+              <i class="fas fa-mouse-pointer"></i>
             </Button>
             {/* <Button color="primary" onClick={display}>
                 Save to db
@@ -735,7 +728,7 @@ function HomePage() {
             <Button color="primary" onClick={refreshPage} title="Clear">
               Clear
             </Button>
-           
+
             {isToggled}
           </div>
         ) : null}
@@ -756,39 +749,37 @@ function HomePage() {
             // register event position
             stageEl.current.setPointersPositions(e);
             // add image
-            
+
             setImages(
               images.concat([
                 {
                   ...stageEl.current.getRelativePointerPosition(),
                   src: dragUrl.current,
                 },
-              ]
-              )
+              ])
             );
-            
           }}
           onDragOver={(e) => e.preventDefault()}
         >
           {canvasShow ? (
             <div id="child-canvas">
-                 <div
-            onDrop={(e) => {
-              e.preventDefault();
-              // register event position
-              stageEl.current.setPointersPositions(e);
-              // add image
-              setImages(
-                images.concat([
-                  {
-                    ...stageEl.current.getRelativePointerPosition(),
-                    src: dragUrl.current
-                  }
-                ])
-              );
-            }}
-            onDragOver={(e) => e.preventDefault()}
-          ></div>
+              <div
+                onDrop={(e) => {
+                  e.preventDefault();
+                  // register event position
+                  stageEl.current.setPointersPositions(e);
+                  // add image
+                  setImages(
+                    images.concat([
+                      {
+                        ...stageEl.current.getRelativePointerPosition(),
+                        src: dragUrl.current,
+                      },
+                    ])
+                  );
+                }}
+                onDragOver={(e) => e.preventDefault()}
+              ></div>
               <Stage
                 style={{
                   border: "1px solid grey",
@@ -809,37 +800,34 @@ function HomePage() {
                     selectShape(null);
                   }
                 }}
-                
               >
                 <Layer ref={layerEl}>
-                  
                   {/* {images.map((image) => {
                     return <URLImage image={image} />;
                   })} */}
-   {images.map((image, index) => {
-                  return (
-                    <URLImage
-                      image={image}
-                      key={index}
-                      shapeProps={image}
-                      stageScale={stageSpec.scale}
-                      isSelected={image === selectedId}
-                      unSelectShape={unSelectShape}
-                      onClick={handleRemove}
-                      onSelect={() => {
-                        selectShape(image);
-                      }}
-                      onChange={(newAttrs) => {
-                        const rects = images.slice();
-                        rects[index] = newAttrs;
-                        setImages(rects);
-                      }}
-                      onDelete={onDeleteImage}
-                      
-                    />
-                  );
-                })}
-                    {rectangles.map((rect, i) => {
+                  {images.map((image, index) => {
+                    return (
+                      <URLImage
+                        image={image}
+                        key={index}
+                        shapeProps={image}
+                        stageScale={stageSpec.scale}
+                        isSelected={image === selectedId}
+                        unSelectShape={unSelectShape}
+                        onClick={handleRemove}
+                        onSelect={() => {
+                          selectShape(image);
+                        }}
+                        onChange={(newAttrs) => {
+                          const rects = images.slice();
+                          rects[index] = newAttrs;
+                          setImages(rects);
+                        }}
+                        onDelete={onDeleteImage}
+                      />
+                    );
+                  })}
+                  {rectangles.map((rect, i) => {
                     return (
                       <Rectangle
                         key={i}
@@ -875,21 +863,21 @@ function HomePage() {
                     );
                   })}
                   {images.map((image, i) => {
-            return (
-              <Image
-                key={i}
-                imageUrl={image.content}
-                isSelected={image.id === selectedId}
-                onSelect={() => {
-                  selectShape(image.id);
-                }}
-                onChange={newAttrs => {
-                  const imgs = images.slice();
-                  imgs[i] = newAttrs;
-                }}
-              />
-            );
-          })}
+                    return (
+                      <Image
+                        key={i}
+                        imageUrl={image.content}
+                        isSelected={image.id === selectedId}
+                        onSelect={() => {
+                          selectShape(image.id);
+                        }}
+                        onChange={(newAttrs) => {
+                          const imgs = images.slice();
+                          imgs[i] = newAttrs;
+                        }}
+                      />
+                    );
+                  })}
                 </Layer>
               </Stage>
             </div>
