@@ -4,7 +4,7 @@ uuidv1();
 export const addTextNode = (stage, layer) => {
   const id = uuidv1();
   const textNode = new Konva.Text({
-    text: "type here",
+    text: "double click to type here",
     x: 50,
     y: 80,
     fontSize: 20,

@@ -10,7 +10,6 @@ import { Image as KonvaImage, Stage, Layer, Image, Rect, Transformer } from "rea
 import Rectangle from "./Rectangle";
 import Circle from "./Circle";
 import { addLine } from "./line";
-
 import { addTextNode } from "./textNode";
 import useImage from "use-image";
 import { v1 as uuidv1 } from "uuid";
@@ -185,13 +184,9 @@ function HomePage() {
   const [prevHide, setPrevHide] = React.useState(false);
   const [val, setVal] = React.useState([""]);
   const [val2, setVal2] = React.useState([""]);
-  const [data, setData] = useState([]);
-  const [link, setLink] = useState([]);
+  const [draw, setDraw] = useState(true);
+  const [notfound, setNotfound] = useState("  ")
   const [tmp, setTmp] = useState("");
-  const [isDrag, setIsDrag] = useState(false);
-  const [xcoor,setXcoor] = useState(50);
-  const [ycoor,setYcoor] = useState(50);
-  const fileUploadEl = React.createRef();
   const [stageSpec, setStageSpec] = useState({
     scale: 1,
     x: 0,
@@ -325,8 +320,15 @@ function HomePage() {
       .then((res) => {
         if (res.key == "Not Found") {
           console.log("nahi mila");
+          setNotfound("Logo not found")
           setTmp(null);
-        } else {
+        }
+        else if(res.key === "Search")
+        {
+          setNotfound("Search for imager")
+          setTmp(null);
+        } 
+        else {
           setTmp(res.key);
           console.log("res = ", res.key);
         }
@@ -480,10 +482,18 @@ function HomePage() {
     setShapes(shs);
   };
   const drawLine = () => {
-    addLine(stageEl.current.getStage(), layerEl.current);
+    if(draw)
+    addLine(stageEl.current.getStage(), layerEl.current, "brush");
+
   };
   const eraseLine = () => {
     addLine(stageEl.current.getStage(), layerEl.current, "erase");
+  };
+  const doNothing = () => {
+    // setDraw(false)
+    // console.log(draw)
+    // nothing(stageEl.current.getStage(), layerEl.current);
+    addLine(stageEl.current.getStage(), layerEl.current, "none");
   };
   const drawText = () => {
     const id = addTextNode(stageEl.current.getStage(), layerEl.current);
@@ -632,7 +642,9 @@ function HomePage() {
          
         /> */}
                 <img
-              
+              alt = {notfound}
+              height="50rem"
+                  width="50rem"
                   key="img3"
                   id = "logo"
                   src={tmp}
@@ -642,6 +654,7 @@ function HomePage() {
                     dragUrl.current = e.target.src;
                   }}
                 />
+              
                  {/* <div
             onDrop={(e) => {
               e.preventDefault();
@@ -706,11 +719,14 @@ function HomePage() {
             <Button color="primary" onClick={undo} title="Undo Shape">
               <i class="fa-solid fa-delete-left"></i>
             </Button>
-            <Button color="primary" onClick={download} title="download">
+            {/* <Button color="primary" onClick={download} title="download">
               Export
-            </Button>
+            </Button> */}
             <Button color="primary" onClick={undoImage} title="Undo Image">
             <i class="fa fa-undo" aria-hidden="true"></i>
+            </Button>
+            <Button color="primary" onClick={doNothing} title="Pointer">
+            <i class="fas fa-mouse-pointer"></i>
             </Button>
             {/* <Button color="primary" onClick={display}>
                 Save to db

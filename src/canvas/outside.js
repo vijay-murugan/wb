@@ -1,24 +1,13 @@
 import Konva from "konva";
-let isPaint = false;
-const fn =(mode)=>{
-  if (mode === "none" ){
-  isPaint = false;
-  return 0;}
-  else if (mode === "brush")
-  return 4
-  else
-  return 20
-}
-export const addLine = (stage, layer, mode ) => {
-  
+export const nothing = (stage, layer, mode ) => {
+  let isPaint = false;
   let lastLine;
   stage.on("mousedown touchstart", function (e) {
     isPaint = true;
     let pos = stage.getPointerPosition();
     lastLine = new Konva.Line({
-      stroke:mode === "brush" ? "black" : "white" ,//mode === "brush"?"black":mode === "eraser"?"white":null ,
-      strokeWidth:  fn(mode),
-      
+      stroke: mode === "brush" ? "black" : "white" ,
+      strokeWidth: mode === "brush" ? 0 : 0,
       globalCompositeOperation:
         mode === "brush" ? "source-over" : "destination-out",
       points: [pos.x, pos.y],
