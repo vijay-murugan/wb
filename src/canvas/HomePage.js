@@ -643,8 +643,8 @@ function HomePage() {
         /> */}
                 <img
               // alt = {notfound}
-              height="50rem"
-                  width="50rem"
+              // height="50rem"
+              //     width="50rem"
                   key="img3"
                   id = "logo"
                   src={tmp}
