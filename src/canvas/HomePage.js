@@ -185,7 +185,7 @@ function HomePage() {
   const [val, setVal] = React.useState([""]);
   const [val2, setVal2] = React.useState([""]);
   const [draw, setDraw] = useState(true);
-  const [notfound, setNotfound] = useState("  ")
+  // const [notfound, setNotfound] = useState("  ")
   const [tmp, setTmp] = useState("");
   const [stageSpec, setStageSpec] = useState({
     scale: 1,
@@ -319,13 +319,13 @@ function HomePage() {
       })
       .then((res) => {
         if (res.key == "Not Found") {
-          console.log("nahi mila");
-          setNotfound("Logo not found")
+          // console.log("nahi mila");
+          // setNotfound("Logo not found")
           setTmp(null);
         }
         else if(res.key === "Search")
         {
-          setNotfound("Search for imager")
+          // setNotfound("Search for imager")
           setTmp(null);
         } 
         else {
@@ -642,7 +642,7 @@ function HomePage() {
          
         /> */}
                 <img
-              alt = {notfound}
+              // alt = {notfound}
               height="50rem"
                   width="50rem"
                   key="img3"
