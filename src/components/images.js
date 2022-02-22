@@ -15,7 +15,6 @@ const Images = () => {
   useEffect(()=>{
     display()
   },[])
-  console.log("Data = ",data)
   return (
     <div>
     <img src = {data.data}/>
