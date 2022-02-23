@@ -310,8 +310,8 @@ function HomePage() {
     const payload = {
       img: dataURL,
     };
-    // fetch("https://wba-a.herokuapp.com/api/tmp", {
-      fetch("http://localhost:5000/api/tmp", {
+    fetch("https://wba-a.herokuapp.com/api/tmp", {
+      // fetch("http://localhost:5000/api/tmp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -340,8 +340,8 @@ function HomePage() {
     const payload = {
       img: dataURL,
     };
-    // fetch("https://wba-a.herokuapp.com/api/tmp", {
-      fetch("http://localhost:5000/api/tmp/url", {
+    fetch("https://wba-a.herokuapp.com/api/tmp/url", {
+      // fetch("http://localhost:5000/api/tmp/url", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -395,8 +395,8 @@ function HomePage() {
     // console.log(JSON.stringify(payload))
 
     //data.append("json", JSON.stringify(payload))
-    // fetch("https://wba-a.herokuapp.com/save", {
-      fetch("http://localhost:5000/save", {
+    fetch("https://wba-a.herokuapp.com/save", {
+      // fetch("http://localhost:5000/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
