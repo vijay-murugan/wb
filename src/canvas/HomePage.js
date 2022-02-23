@@ -190,6 +190,7 @@ function HomePage() {
   const [draw, setDraw] = useState(true);
   // const [notfound, setNotfound] = useState("  ")
   const [tmp, setTmp] = useState("");
+  const [tmp2, setTmp2] = useState("");
   const [stageSpec, setStageSpec] = useState({
     scale: 1,
     x: 0,
@@ -309,8 +310,8 @@ function HomePage() {
     const payload = {
       img: dataURL,
     };
-    fetch("https://wba-a.herokuapp.com/api/tmp", {
-      // fetch("http://localhost:5000/api/tmp", {
+    // fetch("https://wba-a.herokuapp.com/api/tmp", {
+      fetch("http://localhost:5000/api/tmp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -335,6 +336,37 @@ function HomePage() {
       });
   };
 
+  const conveImgURL = (dataURL) => {
+    const payload = {
+      img: dataURL,
+    };
+    // fetch("https://wba-a.herokuapp.com/api/tmp", {
+      fetch("http://localhost:5000/api/tmp/url", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(function (res) {
+        return res.json();
+      })
+      .then((res) => {
+        if (res.key == "Not Found") {
+          // console.log("nahi mila");
+          // setNotfound("Logo not found")
+          setTmp2(null);
+        } else if (res.key === "Search") {
+          // setNotfound("Search for imager")
+          setTmp2(null);
+        } else {
+          setTmp2(res.key);
+          console.log("res = ", res.key);
+        }
+      });
+  };
+
+
   const handleChange = (value) => {
     // setName(
     //   "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www." +
@@ -344,12 +376,14 @@ function HomePage() {
     //   "  https://icons.duckduckgo.com/ip3/www.google.com.ico"
     // );
     // setName2(
-    //   "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=" +
-    //     value +
-    //     "&size=128"
+      // "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=" +
+      //   value +
+      //   "&size=128"
     // );
 
-    if (value != null) conveImg(value);
+    if (value != null){ 
+      conveImg(value);
+      conveImgURL(value)}
   };
 
   const display = () => {
@@ -361,8 +395,8 @@ function HomePage() {
     // console.log(JSON.stringify(payload))
 
     //data.append("json", JSON.stringify(payload))
-    fetch("https://wba-a.herokuapp.com/save", {
-      // fetch("http://localhost:5000/save", {
+    // fetch("https://wba-a.herokuapp.com/save", {
+      fetch("http://localhost:5000/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -641,6 +675,19 @@ function HomePage() {
           key="img3"
           id="logo"
           src={tmp}
+          onLoad={loadFn}
+          draggable="true"
+          onDragStart={(e) => {
+            dragUrl.current = e.target.src;
+          }}
+        />
+       <img
+          // alt = {notfound}
+          // height="50rem"
+          //     width="50rem"
+          key="img3"
+          id="logo"
+          src={tmp2}
           onLoad={loadFn}
           draggable="true"
           onDragStart={(e) => {
